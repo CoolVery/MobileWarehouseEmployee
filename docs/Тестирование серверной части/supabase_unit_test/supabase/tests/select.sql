@@ -3,7 +3,7 @@ select plan(4);
 
 SELECT is(CAST(count(*) as int), 3, 'Запрос должен вернуть 3 строки') 
 FROM public.workers_work_shifts
-WHERE id_work_shift = (SELECT id FROM public.work_shifts WHERE date_shift = current_date AND id_warehouse = 1);
+WHERE id_work_shift = (SELECT id FROM public.work_shifts WHERE date_shift = "2024-10-30" AND id_warehouse = 1);
 
 SELECT is(CAST(count(*) as int), 3, 'Запрос должен вернуть 3 строки')
 FROM public.tasks_workers 
@@ -14,7 +14,7 @@ AND id_task IN (
     WHERE date_trunc('day', date_execution_task) = '2024-10-30'
 );
 
-SELECT is(CAST(count(*) as int), 2, 'Запрос должен вернуть 3 строки')
+SELECT is(CAST(count(*) as int), 2, 'Запрос должен вернуть 2 строки')
 FROM public.cells 
 WHERE id IN (
     SELECT id_cell
@@ -22,7 +22,7 @@ WHERE id IN (
     WHERE id_task = 4
 );
 
-SELECT is(CAST(count(*) as int), 2, 'Запрос должен вернуть 3 строки')
+SELECT is(CAST(count(*) as int), 2, 'Запрос должен вернуть 2 строки')
 FROM public.products 
 WHERE id IN (
     SELECT id_product
