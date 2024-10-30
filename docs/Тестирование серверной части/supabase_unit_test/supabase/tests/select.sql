@@ -3,7 +3,7 @@ select plan(4);
 
 SELECT is(CAST(count(*) as int), 3, 'Запрос должен вернуть 3 строки') 
 FROM public.workers_work_shifts
-WHERE id_work_shift = (SELECT id FROM public.work_shifts WHERE date_shift = "2024-10-30" AND id_warehouse = 1);
+WHERE id_work_shift = (SELECT id FROM public.work_shifts WHERE date_shift = '2024-10-30' AND id_warehouse = 1);
 
 SELECT is(CAST(count(*) as int), 3, 'Запрос должен вернуть 3 строки')
 FROM public.tasks_workers 
