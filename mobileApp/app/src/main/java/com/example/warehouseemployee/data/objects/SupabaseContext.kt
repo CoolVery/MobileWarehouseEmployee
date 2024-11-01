@@ -1,4 +1,4 @@
-package com.example.warehouseemployee.models
+package com.example.warehouseemployee.data.objects
 
 import com.example.warehouseemployee.BuildConfig
 import dagger.Module
