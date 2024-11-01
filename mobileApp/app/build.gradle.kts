@@ -8,6 +8,12 @@ plugins {
 
 android {
 
+    buildFeatures {
+        // The first line should already be in your project!
+        compose = true
+        buildConfig = true
+    }
+
     namespace = "com.example.warehouseemployee"
     compileSdk = 34
 
