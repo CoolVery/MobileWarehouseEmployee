@@ -1,8 +1,9 @@
+import org.jetbrains.kotlin.config.KotlinCompilerVersion
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -54,7 +55,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.1"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
