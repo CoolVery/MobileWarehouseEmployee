@@ -1,4 +1,4 @@
-package com.example.warehouseemployee
+package com.example.warehouseemployee.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,7 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.warehouseemployee.presentation.navigathion.AuthorizationDestination
-import com.example.warehouseemployee.presentation.screens.Authorization
+import com.example.warehouseemployee.presentation.screens.auth.Authorization
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import dagger.hilt.android.AndroidEntryPoint
 

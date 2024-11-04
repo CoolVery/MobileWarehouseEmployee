@@ -1,4 +1,4 @@
-package com.example.warehouseemployee.presentation.screens
+package com.example.warehouseemployee.presentation.screens.auth
 
 import androidx.lifecycle.ViewModel
 import com.example.warehouseemployee.domain.auth.AuthenticationRepository
