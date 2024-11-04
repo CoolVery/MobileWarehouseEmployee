@@ -5,4 +5,4 @@ import dagger.hilt.android.HiltAndroidApp
 
 // ManageProductApplication.kt
 @HiltAndroidApp
-class ManageProductApplication: Application()
+class ManageProductApplication: Application() {}

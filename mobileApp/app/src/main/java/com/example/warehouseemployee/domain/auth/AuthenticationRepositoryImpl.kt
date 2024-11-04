@@ -1,4 +1,4 @@
-package com.example.warehouseemployee.domain
+package com.example.warehouseemployee.domain.auth
 
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.builtin.Phone

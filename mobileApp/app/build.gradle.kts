@@ -6,6 +6,9 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
+
 }
 
 android {
@@ -91,8 +94,8 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.utils)
     //hilt
-    implementation(libs.hilt.android)
-    annotationProcessor(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation("com.google.dagger:hilt-android:2.52")
+    kapt("com.google.dagger:hilt-compiler:2.52")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }
