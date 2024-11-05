@@ -1,57 +1,42 @@
 package com.example.warehouseemployee.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 
-private val DarkColorScheme = darkColorScheme(
-    primary = md_theme_dark_primary,
-    onPrimary = md_theme_dark_onPrimary,
-    secondary = md_theme_dark_secondary,
-    onSecondary = md_theme_dark_onSecondary,
-    tertiary = md_theme_dark_tertiary,
-    onTertiary = md_theme_dark_onTertiary,
-    background = md_theme_dark_background
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = md_theme_light_primary,
-    onPrimary = md_theme_light_onPrimary,
-    secondary = md_theme_light_secondary,
-    onSecondary = md_theme_light_onSecondary,
-    tertiary = md_theme_light_tertiary,
-    onTertiary = md_theme_light_onTertiary,
-    background = md_theme_light_background,
-    onBackground = md_theme_light_onBackground
-)
+object WarehouseEmployeeTheme {
+    val typography: androidx.compose.material3.Typography
+        @ReadOnlyComposable
+        @Composable
+        get() = LocalTypography.current
+    val colors: ColorPalette
+        @ReadOnlyComposable
+        @Composable
+        get() = LocalColor.current
+}
 
 @Composable
 fun WarehouseEmployeeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    themeMode: ThemeMode = ThemeMode.Dark,
+    typography: Typography = WarehouseEmployeeTheme.typography,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colors = when (themeMode) {
+        ThemeMode.Dark -> darkTheme
+        ThemeMode.Light -> lightTheme
+    }
+    CompositionLocalProvider(
+        LocalTypography provides typography,
+        LocalColor provides colors,
+    ) {
+        content()
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+}
+
+sealed class ThemeMode(val title: String) {
+    data object Dark: ThemeMode(title = "Dark")
+    data object Light: ThemeMode(title = "Light")
 }
