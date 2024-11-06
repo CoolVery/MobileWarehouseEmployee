@@ -48,7 +48,10 @@ fun PasswordTextField (value: String, funChange: (String) -> Unit, placeholder: 
     TextField(
         value = textFieldValue,
         onValueChange = { newValue ->
-            textFieldValue = newValue
+            if (newValue.text.length <= 6) {
+                textFieldValue = newValue
+                funChange(textFieldValue.text)
+            }
         },
         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation('*'),
         textStyle = WarehouseEmployeeTheme.typography.textField.copy(

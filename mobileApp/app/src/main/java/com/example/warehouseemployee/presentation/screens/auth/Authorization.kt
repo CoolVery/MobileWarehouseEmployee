@@ -1,5 +1,6 @@
 package com.example.warehouseemployee.presentation.screens.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,29 +23,56 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.warehouseemployee.presentation.components.textfields.PasswordTextField
 import com.example.warehouseemployee.presentation.components.textfields.PhoneTextField
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
+import kotlinx.coroutines.flow.collect
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Authorization (
-    modifier: Modifier = Modifier,
-    navController: NavController,
+    navController: NavHostController,
     viewModel: AuthorizationViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val phone = viewModel.phone.collectAsState(initial = "")
     val password = viewModel.password.collectAsState(initial = "")
+
+    //Лаунсэффект, который срабатывает при изменении isError
+    //Если в ошибка не пустая строка и не начинается с S, то появится тост
+    //Иначе если ошибка не пустая, т.е. в ней содержится айди пользователя, то произойдет навигация
+    LaunchedEffect(key1 = viewModel.isError) {
+        viewModel.isError.collect { error ->
+            error?.let {
+                if(!error.startsWith("S") && error != "") {
+                    Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                }
+                else if(error != "") {
+                    viewModel.navigateTo.collect { route ->
+                        route?.let {
+                            navController.navigate(route)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -127,7 +155,9 @@ fun Authorization (
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(30.dp, 0.dp),
-                onClick = {},
+                onClick = {
+                    viewModel.onSignIn()
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = WarehouseEmployeeTheme.colors.background_important_element,
                     contentColor = WarehouseEmployeeTheme.colors.text_color_important_element

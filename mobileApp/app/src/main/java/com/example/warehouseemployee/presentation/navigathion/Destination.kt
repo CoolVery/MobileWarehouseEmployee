@@ -9,3 +9,8 @@ object AuthorizationDestination : Destination {
     override val route = "authorization"
     override val title = "Authorization"
 }
+
+object TasksWorkerDestination : Destination {
+    override val route = "tasksworker"
+    override val title = "Tasksworker"
+}

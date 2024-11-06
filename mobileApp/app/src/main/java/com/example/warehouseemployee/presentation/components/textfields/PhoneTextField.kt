@@ -1,9 +1,11 @@
 package com.example.warehouseemployee.presentation.components.textfields
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -15,8 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -35,18 +41,19 @@ import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
  */
 @Composable
 fun PhoneTextField (value: String, funChange: (String) -> Unit, placeholder: String) {
-
+    val focusManager = LocalFocusManager.current
     var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
     OutlinedTextField(
         value = textFieldValue,
         //-----
         //Далее проверка на то, что длина нового вводимого текста не больше 12 и совпадает с рег
-        //Главная проверка - если длина значения в текстовом поле меньеш 2 (т.е. пользователь удаляет +7),
+        //Главная проверка - если длина значения в текстовом поле меньше 2 (т.е. пользователь удаляет +7),
         //То он кладет в TextFieldValue +7 и ставит курсор после 7
         //Иначе, он создает регулярное значение, что введены только цифры, далее проверяет,
         //Что значение в текстовом поле меньше 12 и подходит под регулярное выражение
         //Если да, то меняется значение поля, а новое значение записывается в phone из viewmodel
         onValueChange = { newValue ->
+
             if (newValue.text.length < 2) {
                 textFieldValue = TextFieldValue("+7", selection = TextRange(2))
             }
@@ -54,7 +61,10 @@ fun PhoneTextField (value: String, funChange: (String) -> Unit, placeholder: Str
                 val regex = Regex("^[+\\d]*$")
                 if (newValue.text.length <= 12 && regex.matches(newValue.text)) {
                     textFieldValue = newValue
-                    funChange(textFieldValue.text.substring(1))
+                    funChange(textFieldValue.text)
+                    if (newValue.text.length == 12) {
+                        focusManager.moveFocus(FocusDirection.Next)
+                    }
                 }
             }
         },
@@ -70,7 +80,7 @@ fun PhoneTextField (value: String, funChange: (String) -> Unit, placeholder: Str
             //Если да, то значение в поле добавляется +7, а в phone из viewmodel передается 7
             .onFocusChanged { focusState ->
                 if (focusState.isFocused && value.isEmpty()) {
-                    funChange("7")
+                    funChange("+7")
                     textFieldValue = TextFieldValue("+7", selection = TextRange(2))
                 }
             },
@@ -84,5 +94,6 @@ fun PhoneTextField (value: String, funChange: (String) -> Unit, placeholder: Str
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
         ),
+
     )
 }

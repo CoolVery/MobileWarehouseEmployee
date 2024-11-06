@@ -14,7 +14,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.warehouseemployee.presentation.navigathion.AuthorizationDestination
+import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
 import com.example.warehouseemployee.presentation.screens.auth.Authorization
+import com.example.warehouseemployee.presentation.screens.tasks.TasksWorker
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,6 +36,11 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(AuthorizationDestination.route) {
                         Authorization(
+                            navController = navController
+                        )
+                    }
+                    composable(TasksWorkerDestination.route) {
+                        TasksWorker(
                             navController = navController
                         )
                     }
