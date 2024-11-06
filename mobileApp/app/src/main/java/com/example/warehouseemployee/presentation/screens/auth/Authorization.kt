@@ -17,10 +17,12 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.warehouseemployee.presentation.components.textfields.PhoneTextField
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 
 
@@ -39,6 +42,8 @@ fun Authorization (
     navController: NavController,
     viewModel: AuthorizationViewModel = hiltViewModel()
 ) {
+    val phone = viewModel.phone.collectAsState(initial = "")
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +65,7 @@ fun Authorization (
             ) {
                 Text(
                     text = "Авторизация",
-                    style = WarehouseEmployeeTheme.typography.titleLarge,
+                    style = WarehouseEmployeeTheme.typography.primaryTitle,
                     color = WarehouseEmployeeTheme.colors.text_color_important_element
 
                 )
@@ -74,7 +79,7 @@ fun Authorization (
         ) {
             Text(
                 text = "Телефон",
-                style = WarehouseEmployeeTheme.typography.bodyLarge,
+                style = WarehouseEmployeeTheme.typography.smallText,
                 color = WarehouseEmployeeTheme.colors.text_color_second_element,
                 modifier = Modifier
                     .padding(bottom = 10.dp)
@@ -84,13 +89,45 @@ fun Authorization (
                 thickness = 3.dp, // Толщина линии
                 modifier = Modifier.fillMaxWidth() // Занять всю ширину
             )
-            OutlinedTextField (
-                value = "",
-                textStyle = WarehouseEmployeeTheme.typography.titleLarge,
-                onValueChange = {  },
+            PhoneTextField(
+                value = phone.value,
+                funChange =  { newPhone -> viewModel.onPhoneChange(newPhone) },
+                placeholder = "Телефон")
+            Text(
+                text = "Телефон",
+                style = WarehouseEmployeeTheme.typography.smallText,
+                color = WarehouseEmployeeTheme.colors.text_color_second_element,
                 modifier = Modifier
-                    .background(Color.White)
-                )
+                    .padding(bottom = 10.dp)
+            )
+            Divider(
+                color = Color.White, // Цвет линии
+                thickness = 3.dp, // Толщина линии
+                modifier = Modifier.fillMaxWidth() // Занять всю ширину
+            )
+            OutlinedTextField(
+                value = "",
+                onValueChange = {  },
+//                textStyle = StudyBuddyTheme.typography.exstralight.copy(
+//                    color = StudyBuddyTheme.colors.textTitle,
+//                    fontSize = 12.sp
+//                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.White),
+                placeholder = {
+                    Text (
+                        text = "ds"
+                    )
+                },
+                minLines = 1,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = Color.Transparent,
+
+                    ),
+            )
         }
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -114,7 +151,7 @@ fun Authorization (
             ) {
                 Text(
                     text = "Вход",
-                    style = WarehouseEmployeeTheme.typography.titleLarge,
+                    style = WarehouseEmployeeTheme.typography.primaryTitle,
                     color = WarehouseEmployeeTheme.colors.text_color_important_element
                 )
             }

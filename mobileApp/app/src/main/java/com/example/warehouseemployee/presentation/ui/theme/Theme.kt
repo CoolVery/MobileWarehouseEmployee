@@ -1,13 +1,12 @@
 package com.example.warehouseemployee.ui.theme
 
 
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 
 object WarehouseEmployeeTheme {
-    val typography: androidx.compose.material3.Typography
+    val typography: Typography
         @ReadOnlyComposable
         @Composable
         get() = LocalTypography.current
