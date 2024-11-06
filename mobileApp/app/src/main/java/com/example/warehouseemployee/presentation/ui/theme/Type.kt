@@ -23,7 +23,7 @@ val typography = Typography(
     primaryTitle = TextStyle(
         fontFamily = FontFamily(Font(R.font.magnet_trial_bold)),
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
+        fontSize = 25.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),

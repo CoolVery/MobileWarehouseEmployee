@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.warehouseemployee.presentation.components.textfields.PasswordTextField
 import com.example.warehouseemployee.presentation.components.textfields.PhoneTextField
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 
@@ -43,7 +44,7 @@ fun Authorization (
     viewModel: AuthorizationViewModel = hiltViewModel()
 ) {
     val phone = viewModel.phone.collectAsState(initial = "")
-
+    val password = viewModel.password.collectAsState(initial = "")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,49 +86,34 @@ fun Authorization (
                     .padding(bottom = 10.dp)
             )
             Divider(
-                color = Color.White, // Цвет линии
-                thickness = 3.dp, // Толщина линии
-                modifier = Modifier.fillMaxWidth() // Занять всю ширину
+                color = Color.White,
+                thickness = 3.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 30.dp)
             )
             PhoneTextField(
                 value = phone.value,
                 funChange =  { newPhone -> viewModel.onPhoneChange(newPhone) },
                 placeholder = "Телефон")
             Text(
-                text = "Телефон",
+                text = "Пароль",
                 style = WarehouseEmployeeTheme.typography.smallText,
                 color = WarehouseEmployeeTheme.colors.text_color_second_element,
                 modifier = Modifier
-                    .padding(bottom = 10.dp)
+                    .padding(bottom = 10.dp, top = 30.dp)
             )
             Divider(
                 color = Color.White, // Цвет линии
                 thickness = 3.dp, // Толщина линии
-                modifier = Modifier.fillMaxWidth() // Занять всю ширину
-            )
-            OutlinedTextField(
-                value = "",
-                onValueChange = {  },
-//                textStyle = StudyBuddyTheme.typography.exstralight.copy(
-//                    color = StudyBuddyTheme.colors.textTitle,
-//                    fontSize = 12.sp
-//                ),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(Color.White),
-                placeholder = {
-                    Text (
-                        text = "ds"
-                    )
-                },
-                minLines = 1,
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent,
-
-                    ),
+                    .fillMaxWidth() // Занять всю ширину
+                    .padding(bottom = 30.dp)
             )
+            PasswordTextField(
+                value = password.value,
+                funChange = { newPassword -> viewModel.onPasswordChange(newPassword) },
+                placeholder = "Пароль")
         }
         Row(
             horizontalArrangement = Arrangement.Center,

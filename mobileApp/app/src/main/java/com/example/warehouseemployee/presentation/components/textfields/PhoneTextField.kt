@@ -2,6 +2,7 @@ package com.example.warehouseemployee.presentation.components.textfields
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
@@ -27,7 +28,7 @@ import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
  * Текстовые поля для авторизации
  *
  * @param value Значение, которое сохраяняет, что написано в текстовом поле
- * @param funChange Значение, которое вводится в текстовое поле
+ * @param funChange Функция, которая кладет значение в переменную из viewmodel
  * @param placeholder Плейсхолдер текстового поля
  *
  * @return Текстовое поле для авторизации
@@ -39,14 +40,22 @@ fun PhoneTextField (value: String, funChange: (String) -> Unit, placeholder: Str
     OutlinedTextField(
         value = textFieldValue,
         //-----
-        //Cначала делается рег на то, что вводятся только Цифры
         //Далее проверка на то, что длина нового вводимого текста не больше 12 и совпадает с рег
+        //Главная проверка - если длина значения в текстовом поле меньеш 2 (т.е. пользователь удаляет +7),
+        //То он кладет в TextFieldValue +7 и ставит курсор после 7
+        //Иначе, он создает регулярное значение, что введены только цифры, далее проверяет,
+        //Что значение в текстовом поле меньше 12 и подходит под регулярное выражение
         //Если да, то меняется значение поля, а новое значение записывается в phone из viewmodel
         onValueChange = { newValue ->
-            val regex = Regex("^[+\\d]*$")
-            if (newValue.text.length <= 12 && regex.matches(newValue.text)) {
-                textFieldValue = newValue
-                funChange(textFieldValue.text.substring(1))
+            if (newValue.text.length < 2) {
+                textFieldValue = TextFieldValue("+7", selection = TextRange(2))
+            }
+            else {
+                val regex = Regex("^[+\\d]*$")
+                if (newValue.text.length <= 12 && regex.matches(newValue.text)) {
+                    textFieldValue = newValue
+                    funChange(textFieldValue.text.substring(1))
+                }
             }
         },
         //-----
@@ -74,7 +83,6 @@ fun PhoneTextField (value: String, funChange: (String) -> Unit, placeholder: Str
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
-
-            ),
+        ),
     )
 }

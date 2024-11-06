@@ -28,19 +28,15 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val currentBackStack by navController.currentBackStackEntryAsState()
                 val currentDestination = currentBackStack?.destination
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NavHost(
-                        navController,
-                        startDestination = AuthorizationDestination.route,
-                        Modifier.padding(innerPadding)
-                    ) {
-                        composable(AuthorizationDestination.route) {
-                            Authorization(
-                                navController = navController
-                            )
-                        }
+                NavHost(
+                    navController,
+                    startDestination = AuthorizationDestination.route,
+                ) {
+                    composable(AuthorizationDestination.route) {
+                        Authorization(
+                            navController = navController
+                        )
                     }
-
                 }
             }
         }
