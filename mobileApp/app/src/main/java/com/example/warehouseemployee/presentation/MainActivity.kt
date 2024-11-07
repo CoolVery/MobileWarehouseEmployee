@@ -39,8 +39,12 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
-                    composable(TasksWorkerDestination.route) {
+                    composable(
+                        route = "${TasksWorkerDestination.route}/{${TasksWorkerDestination.worker}}",
+                        arguments = TasksWorkerDestination.arguments) { navBackStackEntry ->
+                        val workerId = navBackStackEntry.arguments!!.getString(TasksWorkerDestination.worker)
                         TasksWorker(
+                            workerId = workerId,
                             navController = navController
                         )
                     }

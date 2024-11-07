@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 
 @Composable
 fun TasksWorker(
+    workerId: String?,
     navController: NavController
 ) {
 

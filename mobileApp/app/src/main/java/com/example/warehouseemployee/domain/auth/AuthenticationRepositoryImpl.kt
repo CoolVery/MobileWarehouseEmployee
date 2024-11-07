@@ -5,6 +5,7 @@ import android.net.http.HttpException
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.data.objects.SupabaseContext
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.exception.AuthRestException

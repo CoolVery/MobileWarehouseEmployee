@@ -1,5 +1,6 @@
 package com.example.warehouseemployee.presentation.screens.auth
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -65,7 +66,10 @@ fun Authorization (
                 else if(error != "") {
                     viewModel.navigateTo.collect { route ->
                         route?.let {
-                            navController.navigate(route)
+                            viewModel.worker.collect { user ->
+                                Log.d("Use", user.lastName)
+                            }
+                            navController.navigate("${route}/${error}")
                         }
                     }
                 }
