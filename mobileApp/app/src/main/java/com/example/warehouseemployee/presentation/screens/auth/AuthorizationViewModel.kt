@@ -20,7 +20,7 @@ import javax.inject.Inject
 class AuthorizationViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
 ) : ViewModel() {
-    private var _isError = MutableStateFlow<String?>(null)
+    private var _isError = MutableStateFlow<String?>("")
     val isError = _isError.asStateFlow()
 
     private var _navigateTo = MutableStateFlow<String?>(null)
@@ -40,7 +40,6 @@ class AuthorizationViewModel @Inject constructor(
         _password.value = password
     }
     fun onSignIn() {
-        _isError.value = ""
         viewModelScope.launch {
             val result = authenticationRepository.signIn(
                 phone = _phone.value,

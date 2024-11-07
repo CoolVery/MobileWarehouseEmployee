@@ -156,7 +156,10 @@ fun Authorization (
                     .fillMaxWidth()
                     .padding(30.dp, 0.dp),
                 onClick = {
-                    viewModel.onSignIn()
+                    if (password.value.isEmpty() || phone.value.isEmpty()) {
+                        Toast.makeText(context, "Поля не должны быть пустыми", Toast.LENGTH_LONG).show()
+                    }
+                    else viewModel.onSignIn()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = WarehouseEmployeeTheme.colors.background_important_element,

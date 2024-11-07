@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class Worker (
     @SerialName("id")
     val id: Int,
+    @SerialName("id_worker")
+    val idWorker: String,
     @SerialName("id_role")
     val idRole: Int,
     @SerialName("first_name")
