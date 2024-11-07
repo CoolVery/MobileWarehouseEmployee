@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 
 data class ColorPalette(
     val background: Color,
-    val background_second: Color? = null,
+    val background_second: Color,
     val background_important_element: Color,
     val text_color_important_element: Color,
     val background_second_element: Color,
@@ -16,10 +16,10 @@ data class ColorPalette(
 
 val darkTheme = ColorPalette (
     background = Color(0xFF424141),
-    background_second = null,
+    background_second = Color(0xFF686666),
     background_important_element = Color(0xFFFBF4F4),
     text_color_important_element = Color(0xFF000000),
-    background_second_element = Color(0xFF686666),
+    background_second_element = Color(0xFF424141),
     text_color_second_element = Color(0xFFFFFFFF),
     background_message = Color(0xFFD9D9D9),
     text_color_message = Color(0xFF000000)

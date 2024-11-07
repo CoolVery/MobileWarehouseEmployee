@@ -10,6 +10,7 @@ import com.example.warehouseemployee.data.objects.SupabaseContext
 import com.example.warehouseemployee.domain.auth.AuthenticationRepository
 import com.example.warehouseemployee.domain.user.WorkerRepository
 import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
+import com.example.warehouseemployee.presentation.navigathion.VisitingWorkersDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.flow.Flow
@@ -58,8 +59,10 @@ class AuthorizationViewModel @Inject constructor(
             if(result.startsWith("S")) {
                 val worker = workerRepository.getWorker(result.substring(1))
                 _worker.value = Json.encodeToString(worker)
-
-                _navigateTo.value = TasksWorkerDestination.route
+                when(worker!!.idRole) {
+                    1 -> _navigateTo.value = TasksWorkerDestination.route
+                    2 -> _navigateTo.value = VisitingWorkersDestination.route
+                }
             }
         }
 

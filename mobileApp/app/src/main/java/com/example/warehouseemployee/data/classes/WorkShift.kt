@@ -8,5 +8,5 @@ data class WorkShift (
     @SerialName("id") val id: Int,
     @SerialName("date_shift") val dateShift: String,
     @SerialName("id_warehouse") val idWarehouse: Int,
-    @SerialName("id_main_shift_worker") val idMainShiftWorker: Int
+    @SerialName("id_main_shift_worker") val idMainShiftWorker: String
 )

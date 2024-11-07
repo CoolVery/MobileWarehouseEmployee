@@ -20,6 +20,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
 ) : AuthenticationRepository {
     override suspend fun signIn(phone: String, password: String): String {
         return try {
+            auth.signOut()
             auth.signInWith(Phone) {
                 this.phone = phone
                 this.password = password
