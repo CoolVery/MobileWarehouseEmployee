@@ -22,3 +22,12 @@ object TasksWorkerDestination : Destination {
         type = NavType.StringType
     })
 }
+
+object VisitingWorkersDestination : Destination {
+    override val route = "visitingworkers"
+    override val title = "Visitingworkers"
+    const val worker = "worker"
+    val arguments = listOf(navArgument(name = worker) {
+        type = NavType.StringType
+    })
+}

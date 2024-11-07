@@ -1,16 +1,13 @@
-package com.example.warehouseemployee.presentation.screens.tasks
+package com.example.warehouseemployee.presentation.screens.visitingworkers
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.example.warehouseemployee.data.classes.Worker
 
 @Composable
-fun TasksWorker(
+fun VisitingWorkers(
     worker: Worker,
     navController: NavController
 ) {
-    Text(
-        text = worker.lastName
-    )
+
 }

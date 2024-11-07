@@ -13,12 +13,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.navigathion.AuthorizationDestination
 import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
+import com.example.warehouseemployee.presentation.navigathion.VisitingWorkersDestination
 import com.example.warehouseemployee.presentation.screens.auth.Authorization
 import com.example.warehouseemployee.presentation.screens.tasks.TasksWorker
+import com.example.warehouseemployee.presentation.screens.visitingworkers.VisitingWorkers
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,11 +46,24 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = "${TasksWorkerDestination.route}/{${TasksWorkerDestination.worker}}",
                         arguments = TasksWorkerDestination.arguments) { navBackStackEntry ->
-                        val workerId = navBackStackEntry.arguments!!.getString(TasksWorkerDestination.worker)
-                        TasksWorker(
-                            workerId = workerId,
-                            navController = navController
-                        )
+                        val worker = navBackStackEntry.arguments!!.getString(TasksWorkerDestination.worker)
+                        if (worker != null) {
+                            TasksWorker(
+                                worker = Json.decodeFromString<Worker>(worker),
+                                navController = navController
+                            )
+                        }
+                    }
+                    composable(
+                        route = "${VisitingWorkersDestination.route}/{${VisitingWorkersDestination.worker}}",
+                        arguments = VisitingWorkersDestination.arguments) { navBackStackEntry ->
+                        val worker = navBackStackEntry.arguments!!.getString(VisitingWorkersDestination.worker)
+                        if (worker != null) {
+                            VisitingWorkers(
+                                worker = Json.decodeFromString<Worker>(worker),
+                                navController = navController
+                            )
+                        }
                     }
                 }
             }

@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,17 +31,8 @@ class AuthorizationViewModel @Inject constructor(
     private var _navigateTo = MutableStateFlow<String?>(null)
     val navigateTo = _navigateTo.asStateFlow()
 
-    val emptyWorker = Worker(
-        id = 0,
-        idWorker = "",
-        idRole = 0,
-        firstName = "",
-        lastName = "",
-        patronymic = "",
-        idWarehouse = 0
-    )
-    private val _worker = MutableStateFlow(emptyWorker)
-    val worker: Flow<Worker> = _worker
+    private val _worker = MutableStateFlow<String>("")
+    val worker: Flow<String> = _worker
 
     private val _phone = MutableStateFlow("")
     val phone: Flow<String> = _phone
@@ -64,7 +57,8 @@ class AuthorizationViewModel @Inject constructor(
             //Меняет навигацию, если пришел айди с префиксом S
             if(result.startsWith("S")) {
                 val worker = workerRepository.getWorker(result.substring(1))
-                _worker.value = worker!!
+                _worker.value = Json.encodeToString(worker)
+
                 _navigateTo.value = TasksWorkerDestination.route
             }
         }

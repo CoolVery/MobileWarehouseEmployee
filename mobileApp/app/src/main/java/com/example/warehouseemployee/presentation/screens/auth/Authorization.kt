@@ -39,10 +39,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.components.textfields.PasswordTextField
 import com.example.warehouseemployee.presentation.components.textfields.PhoneTextField
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import kotlinx.coroutines.flow.collect
+import kotlinx.serialization.json.Json
 
 
 @Composable
@@ -67,9 +69,8 @@ fun Authorization (
                     viewModel.navigateTo.collect { route ->
                         route?.let {
                             viewModel.worker.collect { user ->
-                                Log.d("Use", user.lastName)
+                                navController.navigate("${route}/${user}")
                             }
-                            navController.navigate("${route}/${error}")
                         }
                     }
                 }
