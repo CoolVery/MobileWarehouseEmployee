@@ -21,38 +21,4 @@ data class Worker (
     val patronymic: String,
     @SerialName("id_warehouse")
     val idWarehouse: Int
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readInt(),
-        parcel.readString()!!,
-        parcel.readInt(),
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readInt()
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
-        parcel.writeString(idWorker)
-        parcel.writeInt(idRole)
-        parcel.writeString(firstName)
-        parcel.writeString(lastName)
-        parcel.writeString(patronymic)
-        parcel.writeInt(idWarehouse)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Worker> {
-        override fun createFromParcel(parcel: Parcel): Worker {
-            return Worker(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Worker?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
+)

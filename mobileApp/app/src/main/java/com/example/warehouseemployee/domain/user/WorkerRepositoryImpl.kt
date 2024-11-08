@@ -1,8 +1,10 @@
 package com.example.warehouseemployee.domain.user
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import com.example.warehouseemployee.data.classes.WorkShift
 import com.example.warehouseemployee.data.classes.Worker
+import com.example.warehouseemployee.data.classes.WorkersWorkShift
 import com.example.warehouseemployee.domain.auth.AuthenticationRepository
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.exception.AuthRestException
@@ -50,12 +52,18 @@ class WorkerRepositoryImpl @Inject constructor(
                         }
                     }.decodeSingle<WorkShift>()
                 val result = postgrest.from("workers_work_shifts")
-                    .select {
+                    .select (
+                        Columns.raw("id, id_work_shift, id_worker(id_worker, first_name, last_name, patronymic, id, id_role, id_warehouse)")
+                    ){
                         filter {
                             eq("id_work_shift", main_user_on_shift.id)
                         }
-                    }.decodeList<Worker>()
-                result
+                    }.decodeList<WorkersWorkShift>()
+                val listWorker: MutableList<Worker> = mutableListOf()
+                for (worker in result) {
+                    listWorker.add(worker.idWorker)
+                }
+                listWorker
             }
         } catch (e: Exception) {
             listOf()
