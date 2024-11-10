@@ -10,5 +10,7 @@ data class WorkersWorkShift (
     @SerialName("id_worker")
     val idWorker: Worker,
     @SerialName("id_work_shift")
-    val idWorkShift: Int
+    val idWorkShift: Int,
+    @SerialName("is_came")
+    var isCame: Boolean
 )

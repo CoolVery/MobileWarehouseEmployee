@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -41,6 +43,8 @@ import androidx.navigation.NavController
 import com.example.warehouseemployee.R
 import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun VisitingWorkers(
@@ -48,11 +52,43 @@ fun VisitingWorkers(
     navController: NavController,
     viewModel: VisitingWorkersViewModel = hiltViewModel()
 ) {
-    val selectedValue = remember { mutableStateListOf<Worker?>(null) }
+    val selectedIsCame = remember { mutableStateListOf<Worker>() }
+    var showDialog = remember { mutableStateOf(false) }
 
     val workersList by viewModel.workerList.collectAsState(initial = emptyList())
 
     viewModel.getWorkersForShift(worker.idWorker)
+
+    LaunchedEffect(viewModel.navigateTo) {
+        viewModel.navigateTo.collect { destination ->
+            destination?.let {
+                navController.navigate("${destination}/${Json.encodeToString(worker)}")
+            }
+        }
+    }
+   if (showDialog.value == true) {
+       AlertDialog(
+           onDismissRequest = { showDialog.value = false },
+           confirmButton = {
+               Button(
+                   onClick = {
+                       viewModel.updateIsCameWorkers(selectedIsCame)
+                       showDialog.value = false},
+                   colors = ButtonDefaults.buttonColors(
+                       containerColor = WarehouseEmployeeTheme.colors.background_important_element,
+                       contentColor = WarehouseEmployeeTheme.colors.text_color_important_element
+                   ),
+               ) {
+                   Text(
+                       color = Color.Black,
+                       text = "Да"
+                   )
+               }
+           },
+           title = { Text(text = "Внимание") },
+           text = { Text(text = "Вы уверены, что хотите отправить список работников?") }
+       )
+   }
 
     Column(
         modifier = Modifier
@@ -118,7 +154,7 @@ fun VisitingWorkers(
                                         fontSize = 20.sp
                                     ),
                                     textAlign = TextAlign.Center,
-                                    text = "${workerDate.firstName} ${workerDate.lastName}\n${workerDate.patronymic}",
+                                    text = "${workerDate.idWorker.firstName} ${workerDate.idWorker.lastName}\n${workerDate.idWorker.patronymic}",
                                     modifier = Modifier
 
                                         .padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
@@ -133,24 +169,25 @@ fun VisitingWorkers(
                                         .background(Color.White)
                                 ) {
                                     IconToggleButton(
-                                        checked = selectedValue.contains(workerDate),
+                                        checked = selectedIsCame.contains(workerDate.idWorker),
                                         onCheckedChange = { isChecked ->
                                             if (isChecked) {
-                                                selectedValue.add(workerDate)
+                                                selectedIsCame.add(workerDate.idWorker)
                                             }
+                                            else selectedIsCame.remove(workerDate.idWorker)
                                         }) {
-                                        if (selectedValue.contains(workerDate)) {
+                                        if (selectedIsCame.contains(workerDate.idWorker)) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.check),
                                                 contentDescription = "",
                                                 tint = Color.Black
                                             )
                                         } else {
+                                            selectedIsCame.remove(workerDate.idWorker)
                                             Icon(
                                                 painter = painterResource(id = R.drawable.not_check),
                                                 contentDescription = "",
                                                 tint = Color.Black
-
                                             )
                                         }
                                     }
@@ -168,7 +205,7 @@ fun VisitingWorkers(
                 .fillMaxWidth()
                 .padding(0.dp, 20.dp),
             onClick = {
-
+                showDialog.value = true
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = WarehouseEmployeeTheme.colors.background_important_element,

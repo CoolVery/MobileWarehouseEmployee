@@ -38,7 +38,7 @@ class WorkerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getWorkersForShift(mainWorkerId: String): List<Worker> {
+    override suspend fun getWorkersForShift(mainWorkerId: String): List<WorkersWorkShift> {
         return try {
             withContext(Dispatchers.IO) {
                 val sdf = SimpleDateFormat("yyyy-MM-dd")
@@ -53,20 +53,42 @@ class WorkerRepositoryImpl @Inject constructor(
                     }.decodeSingle<WorkShift>()
                 val result = postgrest.from("workers_work_shifts")
                     .select (
-                        Columns.raw("id, id_work_shift, id_worker(id_worker, first_name, last_name, patronymic, id, id_role, id_warehouse)")
+                        Columns.raw("id, id_work_shift, id_worker(id_worker, first_name, last_name, patronymic, id, id_role, id_warehouse), is_came")
                     ){
                         filter {
                             eq("id_work_shift", main_user_on_shift.id)
                         }
                     }.decodeList<WorkersWorkShift>()
-                val listWorker: MutableList<Worker> = mutableListOf()
-                for (worker in result) {
-                    listWorker.add(worker.idWorker)
-                }
-                listWorker
+                result
             }
         } catch (e: Exception) {
             listOf()
+        }
+    }
+
+    override suspend fun updateIsCameShiftWorker(
+        workersWorkShiftList: List<WorkersWorkShift>
+    ): Boolean {
+        return try {
+            withContext(Dispatchers.IO) {
+                for (worker in workersWorkShiftList) {
+                    if (worker.isCame) {
+                        postgrest.from("workers_work_shifts").update(
+                            {
+                                set("is_came", true)
+                            }
+                        ) {
+                            filter {
+                                eq("id", worker.id)
+                            }
+                        }
+                    }
+                }
+            }
+            true
+        }
+        catch (e: Exception) {
+            false
         }
     }
 }
