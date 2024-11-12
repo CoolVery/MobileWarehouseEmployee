@@ -17,6 +17,7 @@ object WarehouseEmployeeTheme {
 }
 
 @Composable
+
 fun WarehouseEmployeeTheme(
     themeMode: ThemeMode = ThemeMode.Dark,
     typography: Typography = WarehouseEmployeeTheme.typography,

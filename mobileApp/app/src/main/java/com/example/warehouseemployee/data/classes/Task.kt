@@ -8,9 +8,9 @@ data class Task (
     @SerialName("id")
     val id: Int,
     @SerialName("id_category_task")
-    val idCategoryTask: Int,
+    val idCategoryTask: TaskCategory,
     @SerialName("id_responsible_worker")
-    val idResponsibleWorker: Int,
+    val idResponsibleWorker: Worker,
     @SerialName("date_create")
     val dateCreate: String,
     @SerialName("img_optimal_path")
