@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,10 +59,11 @@ fun TasksWorker(
     WarehouseEmployeeTheme(themeMode = themeMode) {
         val taskList by viewModel.taskList.collectAsState(initial = emptyList())
         var taskStartColor by remember { mutableStateOf(Color.Transparent) }
+        val startTaskList = remember { mutableStateListOf<Int>() }
 
         viewModel.getTaskList(worker)
 
-        val (hours, minutes, seconds) = TimerStartTask(taskList)
+        val (hours, minutes, seconds) = TimerStartTask(taskList, startTaskList)
 
         Column(
             modifier = Modifier
@@ -96,16 +98,30 @@ fun TasksWorker(
                             color = WarehouseEmployeeTheme.colors.text_color_important_element
 
                         )
-                        Text(
-                            modifier = Modifier
-                                .padding(top = 10.dp),
-                            text = "Задача через: ${hours}:${minutes}:${seconds}",
-                            style = WarehouseEmployeeTheme.typography.secondText.copy(
-                                fontSize = 13.sp
-                            ),
-                            color = WarehouseEmployeeTheme.colors.text_color_important_element
+                        if (hours == -1 && minutes == -1 && seconds == -1) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(top = 10.dp),
+                                text = "Сегодня задач больше нет",
+                                style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                    fontSize = 13.sp
+                                ),
+                                color = WarehouseEmployeeTheme.colors.text_color_important_element
 
-                        )
+                            )
+                        }
+                        else {
+                            Text(
+                                modifier = Modifier
+                                    .padding(top = 10.dp),
+                                text = "Задача через: ${hours}:${minutes}:${seconds}",
+                                style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                    fontSize = 13.sp
+                                ),
+                                color = WarehouseEmployeeTheme.colors.text_color_important_element
+
+                            )
+                        }
                     }
 
                     IconButton(
@@ -133,86 +149,91 @@ fun TasksWorker(
                     .weight(1f)
             ) {
                 items(
-                    taskList
+                    taskList,
+                    key = {taskList -> taskList.id}
                 ) { taskDate ->
-//                    LaunchedEffect(taskStartColor, taskDate) {
-//                        taskStartColor = Color.Green
-//                    }
-                    Box(
-                        modifier = Modifier
-                            .padding(bottom = 20.dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(WarehouseEmployeeTheme.colors.background_for_light_mode)
-                            .border(3.dp, taskStartColor, RoundedCornerShape(20.dp))
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(0.dp, 20.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .weight(4f)
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceAround
-                                ) {
-                                    Text(
-                                        text = taskDate.dateExecutionTask.substring(11, 16),
-                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-                                            fontSize = 20.sp
-                                        ),
-                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
-
-                                    )
-                                    Text(
-                                        text = taskDate.idCategoryTask.nameCategory,
-                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-                                            fontSize = 20.sp
-                                        ),
-                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
-                                    )
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 5.dp),
-                                    horizontalArrangement = Arrangement.SpaceAround
-                                ) {
-                                    Text(
-                                        text = "${taskDate.idResponsibleWorker.firstName} ${taskDate.idResponsibleWorker.patronymic}",
-                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-                                            fontSize = 12.sp
-                                        ),
-                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
-                                    )
-                                    Spacer(modifier = Modifier)
-                                }
-                            }
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(20.dp))
-                                        .background(Color.White)
-                                ) {
-                                    IconButton(
-                                        onClick = {}
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.arrow_right),
-                                            contentDescription = ""
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                    if (startTaskList.contains(taskDate.id)) {
+                        TaskItem(taskStartColor = Color.Green, taskDate = taskDate)
                     }
+                    else {
+                        TaskItem(taskStartColor = Color.Transparent, taskDate = taskDate)
+
+                    }
+//                    Box(
+//                        modifier = Modifier
+//                            .padding(bottom = 20.dp)
+//                            .fillMaxWidth()
+//                            .clip(RoundedCornerShape(20.dp))
+//                            .background(WarehouseEmployeeTheme.colors.background_for_light_mode)
+//                            .border(3.dp, taskStartColor, RoundedCornerShape(20.dp))
+//                    ) {
+//                        Row(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(0.dp, 20.dp)
+//                        ) {
+//                            Column(
+//                                modifier = Modifier
+//                                    .weight(4f)
+//                            ) {
+//                                Row(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth(),
+//                                    horizontalArrangement = Arrangement.SpaceAround
+//                                ) {
+//                                    Text(
+//                                        text = taskDate.dateExecutionTask.substring(11, 16),
+//                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+//                                            fontSize = 20.sp
+//                                        ),
+//                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
+//
+//                                    )
+//                                    Text(
+//                                        text = taskDate.idCategoryTask.nameCategory,
+//                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+//                                            fontSize = 20.sp
+//                                        ),
+//                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
+//                                    )
+//                                }
+//                                Row(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .padding(top = 5.dp),
+//                                    horizontalArrangement = Arrangement.SpaceAround
+//                                ) {
+//                                    Text(
+//                                        text = "${taskDate.idResponsibleWorker.firstName} ${taskDate.idResponsibleWorker.patronymic}",
+//                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+//                                            fontSize = 12.sp
+//                                        ),
+//                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
+//                                    )
+//                                    Spacer(modifier = Modifier)
+//                                }
+//                            }
+//                            Column(
+//                                modifier = Modifier
+//                                    .weight(1f)
+//                            ) {
+//                                Box(
+//                                    modifier = Modifier
+//                                        .clip(RoundedCornerShape(20.dp))
+//                                        .background(Color.White)
+//                                ) {
+//                                    IconButton(
+//                                        onClick = {}
+//                                    ) {
+//                                        Icon(
+//                                            painter = painterResource(id = R.drawable.arrow_right),
+//                                            contentDescription = ""
+//                                        )
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
                 }
             }
             Button(
@@ -251,7 +272,7 @@ fun TasksWorker(
 }
 
 @Composable
-fun TimerStartTask(tasksList: List<Task>): Triple<Int, Int, Int> {
+fun TimerStartTask(tasksList: List<Task>, startTaskList: MutableList<Int>): Triple<Int, Int, Int> {
     var hours by remember { mutableStateOf(0) }
     var minutes by remember { mutableStateOf(0) }
     var seconds by remember { mutableStateOf(0) }
@@ -264,6 +285,10 @@ fun TimerStartTask(tasksList: List<Task>): Triple<Int, Int, Int> {
             val sdf = SimpleDateFormat("HH:mm:ss")
             val targetDate = sdf.parse(targetTimeString)
             val currentDateAndTime = sdf.parse(sdf.format(Date()))
+            if (targetDate == currentDateAndTime) {
+                startTaskList.add(tasksList[taskIndex].id)
+                indexInList = taskIndex + 1
+            }
             if (targetDate > currentDateAndTime) {
                 val differenceInMillis = targetDate.time - currentDateAndTime.time
                 hours = (differenceInMillis / (1000 * 60 * 60)).toInt()
@@ -272,9 +297,7 @@ fun TimerStartTask(tasksList: List<Task>): Triple<Int, Int, Int> {
                 indexInList = taskIndex
                 break;
             }
-            else if (targetDate == currentDateAndTime) {
-                indexInList = taskIndex + 1
-            }
+
         }
     }
     LaunchedEffect(tasksList, indexInList)  {
@@ -291,7 +314,7 @@ fun TimerStartTask(tasksList: List<Task>): Triple<Int, Int, Int> {
                 hours--
             } else {
                 indexInList++
-                if (indexInList < tasksList.size) {
+                if (tasksList.isNotEmpty() && indexInList < tasksList.size && (hours != -1 && minutes != -1 && seconds != -1)) {
                     val task = tasksList[indexInList]
                     val targetDateTimeStrin = task.dateExecutionTask
                     val targetTimeString = targetDateTimeStrin.substring(11, 19)
@@ -305,7 +328,9 @@ fun TimerStartTask(tasksList: List<Task>): Triple<Int, Int, Int> {
                     minutes = ((differenceInMillis / (1000 * 60)) % 60).toInt() // Минуты
                     seconds = ((differenceInMillis / 1000) % 60).toInt() // Секунды
                 } else {
-                    // Все задачи завершены
+                    hours = -1
+                    minutes = -1
+                    seconds = -1
                     break
                 }
                 break
@@ -314,4 +339,83 @@ fun TimerStartTask(tasksList: List<Task>): Triple<Int, Int, Int> {
     }
 
     return Triple(hours, minutes, seconds)
+}
+
+@Composable
+fun TaskItem(taskStartColor: Color, taskDate: Task) {
+    Box(
+        modifier = Modifier
+            .padding(bottom = 20.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(WarehouseEmployeeTheme.colors.background_for_light_mode)
+            .border(3.dp, taskStartColor, RoundedCornerShape(20.dp))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 20.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(4f)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Text(
+                        text = taskDate.dateExecutionTask.substring(11, 16),
+                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                            fontSize = 20.sp
+                        ),
+                        color = WarehouseEmployeeTheme.colors.text_color_second_element
+
+                    )
+                    Text(
+                        text = taskDate.idCategoryTask.nameCategory,
+                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                            fontSize = 20.sp
+                        ),
+                        color = WarehouseEmployeeTheme.colors.text_color_second_element
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Text(
+                        text = "${taskDate.idResponsibleWorker.firstName} ${taskDate.idResponsibleWorker.patronymic}",
+                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                            fontSize = 12.sp
+                        ),
+                        color = WarehouseEmployeeTheme.colors.text_color_second_element
+                    )
+                    Spacer(modifier = Modifier)
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color.White)
+                ) {
+                    IconButton(
+                        onClick = {}
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_right),
+                            contentDescription = ""
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
