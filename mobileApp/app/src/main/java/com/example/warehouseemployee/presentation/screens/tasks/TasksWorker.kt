@@ -42,6 +42,10 @@ import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import kotlinx.coroutines.delay
+import kotlinx.datetime.LocalDateTime
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.util.Date
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -51,14 +55,14 @@ fun TasksWorker(
     viewModel: TasksWorkerViewModel = hiltViewModel()
 ) {
     var themeMode by remember { mutableStateOf<ThemeMode>(ThemeMode.Dark) }
-
     WarehouseEmployeeTheme(themeMode = themeMode) {
         val taskList by viewModel.taskList.collectAsState(initial = emptyList())
         var taskStartColor by remember { mutableStateOf(Color.Transparent) }
 
-
-
         viewModel.getTaskList(worker)
+
+        val (hours, minutes, seconds) = TimerStartTask(taskList)
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -95,7 +99,7 @@ fun TasksWorker(
                         Text(
                             modifier = Modifier
                                 .padding(top = 10.dp),
-                            text = "Задача через:",
+                            text = "Задача через: ${hours}:${minutes}:${seconds}",
                             style = WarehouseEmployeeTheme.typography.secondText.copy(
                                 fontSize = 13.sp
                             ),
@@ -247,18 +251,67 @@ fun TasksWorker(
 }
 
 @Composable
-fun TimerTicks(tasksList: List<Task>): Int{
-    var ticks by remember { mutableStateOf(0) }
-    var idElement = 0
+fun TimerStartTask(tasksList: List<Task>): Triple<Int, Int, Int> {
+    var hours by remember { mutableStateOf(0) }
+    var minutes by remember { mutableStateOf(0) }
+    var seconds by remember { mutableStateOf(0) }
+    var indexInList = 0;
+    if (tasksList.isNotEmpty()) {
+        for (taskIndex in tasksList.indices) {
+            val targetDateTimeStrin = tasksList[taskIndex].dateExecutionTask
+            val targetTimeString = targetDateTimeStrin.substring(11, 19)
 
-    LaunchedEffect(Unit) {
-        while(true) {
-            if(ticks > 0){
-                delay(1.seconds)
-                ticks--
+            val sdf = SimpleDateFormat("HH:mm:ss")
+            val targetDate = sdf.parse(targetTimeString)
+            val currentDateAndTime = sdf.parse(sdf.format(Date()))
+            if (targetDate > currentDateAndTime) {
+                val differenceInMillis = targetDate.time - currentDateAndTime.time
+                hours = (differenceInMillis / (1000 * 60 * 60)).toInt()
+                minutes = ((differenceInMillis / (1000 * 60)) % 60).toInt()
+                seconds = ((differenceInMillis / 1000) % 60).toInt()
+                indexInList = taskIndex
+                break;
             }
-            else break
+            else if (targetDate == currentDateAndTime) {
+                indexInList = taskIndex + 1
+            }
         }
     }
-    return ticks
+    LaunchedEffect(tasksList, indexInList)  {
+        while (true) {
+            if (seconds > 0) {
+                delay(1.seconds)
+                seconds--
+            } else if (minutes > 0) {
+                seconds = 59
+                minutes--
+            } else if (hours > 0) {
+                minutes = 59
+                seconds = 59
+                hours--
+            } else {
+                indexInList++
+                if (indexInList < tasksList.size) {
+                    val task = tasksList[indexInList]
+                    val targetDateTimeStrin = task.dateExecutionTask
+                    val targetTimeString = targetDateTimeStrin.substring(11, 19)
+
+                    val sdf = SimpleDateFormat("HH:mm:ss")
+                    val targetDate = sdf.parse(targetTimeString)
+                    val currentDateAndTime = sdf.parse(sdf.format(Date()))
+
+                    val differenceInMillis = targetDate.time - currentDateAndTime.time
+                    hours = (differenceInMillis / (1000 * 60 * 60)).toInt() // Часы
+                    minutes = ((differenceInMillis / (1000 * 60)) % 60).toInt() // Минуты
+                    seconds = ((differenceInMillis / 1000) % 60).toInt() // Секунды
+                } else {
+                    // Все задачи завершены
+                    break
+                }
+                break
+            }
+        }
+    }
+
+    return Triple(hours, minutes, seconds)
 }
