@@ -1,6 +1,7 @@
 package com.example.warehouseemployee.domain.task
 
 import com.example.warehouseemployee.data.classes.Task
+import com.example.warehouseemployee.data.classes.TaskProduct
 import com.example.warehouseemployee.data.classes.TaskWorker
 import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.screens.tasks.TasksWorker
@@ -84,6 +85,30 @@ class TaskRepositoryImpl @Inject constructor(
             }
         }
         catch (e: Exception) {
+            listOf()
+        }
+    }
+
+    override suspend fun getTaskProducts(taskId: Int): List<TaskProduct> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val result = postgrest.from("tasks_products").select (
+                    Columns.raw("id," +
+                            "id_task," +
+                            "id_product(id, product_name, article, weight, id_product_category)," +
+                            "id_cell(id, id_section, id_product, name_cell, max_count_product_in_cell, count_product_in_cell, weight_product_in_cell, abbreviated_name)," +
+                            "count_product," +
+                            "position_in_optimal_in_path")
+                ) {
+                    filter {
+                        eq("id_task", taskId)
+                    }
+                }.decodeList<TaskProduct>()
+                result
+            }
+        }
+        catch (e: Exception) {
+            println(e.message)
             listOf()
         }
     }

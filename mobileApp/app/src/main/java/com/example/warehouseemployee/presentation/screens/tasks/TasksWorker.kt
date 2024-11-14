@@ -37,13 +37,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.warehouseemployee.R
 import com.example.warehouseemployee.data.classes.Task
 import com.example.warehouseemployee.data.classes.Worker
+import com.example.warehouseemployee.presentation.navigathion.InfoTaskLoadingDestination
+import com.example.warehouseemployee.presentation.navigathion.InfoTaskUnloadingDestination
+import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskLoading
 import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -58,8 +64,8 @@ fun TasksWorker(
     var themeMode by remember { mutableStateOf<ThemeMode>(ThemeMode.Dark) }
     WarehouseEmployeeTheme(themeMode = themeMode) {
         val taskList by viewModel.taskList.collectAsState(initial = emptyList())
-        var taskStartColor by remember { mutableStateOf(Color.Transparent) }
         val startTaskList = remember { mutableStateListOf<Int>() }
+        var selectedTask by remember { mutableStateOf<Task?>(null) }
 
         viewModel.getTaskList(worker)
 
@@ -126,8 +132,8 @@ fun TasksWorker(
 
                     IconButton(
                         onClick = {
-                            themeMode = if (themeMode == ThemeMode.Dark) ThemeMode.Light else ThemeMode.Dark                        }
-
+                            themeMode = if (themeMode == ThemeMode.Dark) ThemeMode.Light else ThemeMode.Dark
+                        }
                     ) {
                         if (themeMode == ThemeMode.Light) {
                             Icon(
@@ -153,87 +159,11 @@ fun TasksWorker(
                     key = {taskList -> taskList.id}
                 ) { taskDate ->
                     if (startTaskList.contains(taskDate.id)) {
-                        TaskItem(taskStartColor = Color.Green, taskDate = taskDate)
+                        TaskItem(taskStartColor = Color.Green, taskDate = taskDate, navController = navController, worker = worker)
                     }
                     else {
-                        TaskItem(taskStartColor = Color.Transparent, taskDate = taskDate)
-
+                        TaskItem(taskStartColor = Color.Transparent, taskDate = taskDate, navController = navController, worker = worker)
                     }
-//                    Box(
-//                        modifier = Modifier
-//                            .padding(bottom = 20.dp)
-//                            .fillMaxWidth()
-//                            .clip(RoundedCornerShape(20.dp))
-//                            .background(WarehouseEmployeeTheme.colors.background_for_light_mode)
-//                            .border(3.dp, taskStartColor, RoundedCornerShape(20.dp))
-//                    ) {
-//                        Row(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(0.dp, 20.dp)
-//                        ) {
-//                            Column(
-//                                modifier = Modifier
-//                                    .weight(4f)
-//                            ) {
-//                                Row(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth(),
-//                                    horizontalArrangement = Arrangement.SpaceAround
-//                                ) {
-//                                    Text(
-//                                        text = taskDate.dateExecutionTask.substring(11, 16),
-//                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-//                                            fontSize = 20.sp
-//                                        ),
-//                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
-//
-//                                    )
-//                                    Text(
-//                                        text = taskDate.idCategoryTask.nameCategory,
-//                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-//                                            fontSize = 20.sp
-//                                        ),
-//                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
-//                                    )
-//                                }
-//                                Row(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth()
-//                                        .padding(top = 5.dp),
-//                                    horizontalArrangement = Arrangement.SpaceAround
-//                                ) {
-//                                    Text(
-//                                        text = "${taskDate.idResponsibleWorker.firstName} ${taskDate.idResponsibleWorker.patronymic}",
-//                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-//                                            fontSize = 12.sp
-//                                        ),
-//                                        color = WarehouseEmployeeTheme.colors.text_color_second_element
-//                                    )
-//                                    Spacer(modifier = Modifier)
-//                                }
-//                            }
-//                            Column(
-//                                modifier = Modifier
-//                                    .weight(1f)
-//                            ) {
-//                                Box(
-//                                    modifier = Modifier
-//                                        .clip(RoundedCornerShape(20.dp))
-//                                        .background(Color.White)
-//                                ) {
-//                                    IconButton(
-//                                        onClick = {}
-//                                    ) {
-//                                        Icon(
-//                                            painter = painterResource(id = R.drawable.arrow_right),
-//                                            contentDescription = ""
-//                                        )
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
                 }
             }
             Button(
@@ -242,6 +172,7 @@ fun TasksWorker(
                     .fillMaxWidth()
                     .padding(top = 20.dp, start = 40.dp, bottom = 50.dp),
                 onClick = {
+
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = WarehouseEmployeeTheme.colors.background_important_element,
@@ -289,6 +220,10 @@ fun TimerStartTask(tasksList: List<Task>, startTaskList: MutableList<Int>): Trip
                 startTaskList.add(tasksList[taskIndex].id)
                 indexInList = taskIndex + 1
             }
+            if (targetDate < currentDateAndTime) {
+                startTaskList.add(tasksList[taskIndex].id)
+                indexInList = taskIndex + 1
+            }
             if (targetDate > currentDateAndTime) {
                 val differenceInMillis = targetDate.time - currentDateAndTime.time
                 hours = (differenceInMillis / (1000 * 60 * 60)).toInt()
@@ -316,8 +251,8 @@ fun TimerStartTask(tasksList: List<Task>, startTaskList: MutableList<Int>): Trip
                 indexInList++
                 if (tasksList.isNotEmpty() && indexInList < tasksList.size && (hours != -1 && minutes != -1 && seconds != -1)) {
                     val task = tasksList[indexInList]
-                    val targetDateTimeStrin = task.dateExecutionTask
-                    val targetTimeString = targetDateTimeStrin.substring(11, 19)
+                    val targetDateTimeString = task.dateExecutionTask
+                    val targetTimeString = targetDateTimeString.substring(11, 19)
 
                     val sdf = SimpleDateFormat("HH:mm:ss")
                     val targetDate = sdf.parse(targetTimeString)
@@ -342,7 +277,7 @@ fun TimerStartTask(tasksList: List<Task>, startTaskList: MutableList<Int>): Trip
 }
 
 @Composable
-fun TaskItem(taskStartColor: Color, taskDate: Task) {
+fun TaskItem(taskStartColor: Color, taskDate: Task, navController: NavController, worker: Worker) {
     Box(
         modifier = Modifier
             .padding(bottom = 20.dp)
@@ -407,7 +342,22 @@ fun TaskItem(taskStartColor: Color, taskDate: Task) {
                         .background(Color.White)
                 ) {
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            if (taskDate.idCategoryTask.id == 1) {
+                                navController.navigate("${InfoTaskLoadingDestination.route}/" +
+                                        "${Json.encodeToString(worker)}/" +
+                                        "${Json.encodeToString(taskDate)}")
+
+                            }
+                            else {
+                                if (taskDate.idCategoryTask.id == 1) {
+                                    navController.navigate("${InfoTaskUnloadingDestination.route}/" +
+                                            "${Json.encodeToString(worker)}/" +
+                                            "${Json.encodeToString(taskDate)}")
+
+                                }
+                            }
+                        }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_right),

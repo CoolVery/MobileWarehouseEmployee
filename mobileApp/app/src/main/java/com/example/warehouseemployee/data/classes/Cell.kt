@@ -9,6 +9,8 @@ data class Cell(
     val id: Int,
     @SerialName("id_section")
     val idSection: Int,
+    @SerialName("id_product")
+    val idProduct: Int,
     @SerialName("name_cell")
     val nameCell: String,
     @SerialName("max_count_product_in_cell")
@@ -16,7 +18,7 @@ data class Cell(
     @SerialName("count_product_in_cell")
     val countProductInCell: Int,
     @SerialName("weight_product_in_cell")
-    val weightProductInCell: Int,
+    val weightProductInCell: Float,
     @SerialName("abbreviated_name")
     val abbreviatedName: String
 )

@@ -7,12 +7,14 @@ import kotlinx.serialization.Serializable
 data class TaskProduct (
     @SerialName("id")
     val id: Int,
+    @SerialName("id_task")
+    val idTask: Int,
     @SerialName("id_product")
-    val idProduct: Int,
-    @SerialName("count_call")
-    val countCall: Int,
+    val idProduct: Product,
+    @SerialName("id_cell")
+    val idCell: Cell,
     @SerialName("count_product")
     val countProduct: Int,
-    @SerialName("position_in_optimal_list")
-    val positionInOptimalList: Int
+    @SerialName("position_in_optimal_in_path")
+    val positionInOptimaInPath: Int
 )

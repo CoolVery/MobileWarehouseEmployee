@@ -31,3 +31,31 @@ object VisitingWorkersDestination : Destination {
         type = NavType.StringType
     })
 }
+object InfoTaskLoadingDestination : Destination {
+    override val route = "infotaskloading"
+    override val title = "Infotaskloading"
+    const val worker = "worker"
+    const val currentTask = "currentTask"
+    val arguments = listOf(
+        navArgument(name = worker) {
+            type = NavType.StringType
+        },
+        navArgument(name = currentTask) {
+            type = NavType.StringType
+        }
+    )
+}
+object InfoTaskUnloadingDestination : Destination {
+    override val route = "infotaskloading"
+    override val title = "Infotaskloading"
+    const val worker = "worker"
+    const val currentTask = "currentTask"
+    val arguments = listOf(
+        navArgument(name = worker) {
+            type = NavType.StringType
+        },
+        navArgument(name = currentTask) {
+            type = NavType.StringType
+        }
+    )
+}
