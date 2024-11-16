@@ -17,10 +17,14 @@ class TasksWorkerViewModel @Inject constructor(
     private val _cellAndProductList = MutableStateFlow<List<TaskProduct>>(listOf())
     val cellAndProductList: Flow<List<TaskProduct>> = _cellAndProductList
 
+    private val _orderInOptimalPath = MutableStateFlow<List<TaskProduct>>(listOf())
+    val orderInOptimalPath: Flow<List<TaskProduct>> = _orderInOptimalPath
+
     fun getTaskProduct(taskId: Int) {
         viewModelScope.launch {
             val result = taskRepository.getTaskProducts(taskId)
             _cellAndProductList.value = result
+            _orderInOptimalPath.value = result.sortedBy { it.positionInOptimaInPath }
         }
     }
 }
