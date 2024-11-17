@@ -2,6 +2,7 @@ package com.example.warehouseemployee.presentation.screens.tasks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,18 +61,39 @@ import kotlin.time.Duration.Companion.seconds
 fun TasksWorker(
     worker: Worker,
     navController: NavController,
+    themeModeCurrent: ThemeMode?,
     viewModel: TasksWorkerViewModel = hiltViewModel()
 ) {
-    var themeMode by remember { mutableStateOf<ThemeMode>(ThemeMode.Dark) }
-    WarehouseEmployeeTheme(themeMode = themeMode) {
-        val taskList by viewModel.taskList.collectAsState(initial = emptyList())
-        val startTaskList = remember { mutableStateListOf<Int>() }
-        var selectedTask by remember { mutableStateOf<Task?>(null) }
 
-        viewModel.getTaskList(worker)
+    val taskList by viewModel.taskList.collectAsState(initial = emptyList())
+    val startTaskList = remember { mutableStateListOf<Int>() }
+    var themeMode by remember { mutableStateOf<ThemeMode?>(null )}
 
-        val (hours, minutes, seconds) = TimerStartTask(taskList, startTaskList)
+    viewModel.getTaskList(worker)
+    if (themeModeCurrent == null && themeMode != ThemeMode.Dark) {
+        themeMode = ThemeMode.Light
+    }
+    else if (themeModeCurrent == null && themeMode == ThemeMode.Dark) {
+        themeMode = ThemeMode.Dark
+    }
 
+    else if (themeModeCurrent == ThemeMode.Dark && themeMode == ThemeMode.Light) {
+        themeMode = ThemeMode.Light
+    }
+    else if (themeModeCurrent == ThemeMode.Dark && themeMode == ThemeMode.Dark) {
+        themeMode = ThemeMode.Dark
+    }
+    else if (themeModeCurrent == ThemeMode.Light && themeMode == ThemeMode.Dark) {
+        themeMode = ThemeMode.Dark
+    }
+    else if (themeModeCurrent == ThemeMode.Light && themeMode == ThemeMode.Light) {
+        themeMode = ThemeMode.Light
+    }
+    else {
+        themeMode = themeModeCurrent
+    }
+    val (hours, minutes, seconds) = TimerStartTask(taskList, startTaskList)
+    WarehouseEmployeeTheme(themeMode = themeMode!!) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -115,8 +138,7 @@ fun TasksWorker(
                                 color = WarehouseEmployeeTheme.colors.text_color_important_element
 
                             )
-                        }
-                        else {
+                        } else {
                             Text(
                                 modifier = Modifier
                                     .padding(top = 10.dp),
@@ -132,7 +154,13 @@ fun TasksWorker(
 
                     IconButton(
                         onClick = {
-                            themeMode = if (themeMode == ThemeMode.Dark) ThemeMode.Light else ThemeMode.Dark
+                            if (themeMode == ThemeMode.Light) {
+                                themeMode = ThemeMode.Dark
+                            }
+                            else {
+                                themeMode = ThemeMode.Light
+
+                            }
                         }
                     ) {
                         if (themeMode == ThemeMode.Light) {
@@ -140,8 +168,7 @@ fun TasksWorker(
                                 painter = painterResource(id = R.drawable.dark_mode),
                                 contentDescription = ""
                             )
-                        }
-                        else {
+                        } else {
                             Icon(
                                 painter = painterResource(id = R.drawable.light_mode),
                                 contentDescription = ""
@@ -156,13 +183,24 @@ fun TasksWorker(
             ) {
                 items(
                     taskList,
-                    key = {taskList -> taskList.id}
+                    key = { taskList -> taskList.id }
                 ) { taskDate ->
                     if (startTaskList.contains(taskDate.id)) {
-                        TaskItem(taskStartColor = Color.Green, taskDate = taskDate, navController = navController, worker = worker)
-                    }
-                    else {
-                        TaskItem(taskStartColor = Color.Transparent, taskDate = taskDate, navController = navController, worker = worker)
+                        TaskItem(
+                            taskStartColor = Color.Green,
+                            taskDate = taskDate,
+                            navController = navController,
+                            worker = worker,
+                            themeMode = themeMode!!
+                        )
+                    } else {
+                        TaskItem(
+                            taskStartColor = Color.Transparent,
+                            taskDate = taskDate,
+                            navController = navController,
+                            worker = worker,
+                            themeMode = themeMode!!
+                        )
                     }
                 }
             }
@@ -202,170 +240,187 @@ fun TasksWorker(
     }
 }
 
-@Composable
-fun TimerStartTask(tasksList: List<Task>, startTaskList: MutableList<Int>): Triple<Int, Int, Int> {
-    var hours by remember { mutableStateOf(0) }
-    var minutes by remember { mutableStateOf(0) }
-    var seconds by remember { mutableStateOf(0) }
-    var indexInList = 0;
-    if (tasksList.isNotEmpty()) {
-        for (taskIndex in tasksList.indices) {
-            val targetDateTimeStrin = tasksList[taskIndex].dateExecutionTask
-            val targetTimeString = targetDateTimeStrin.substring(11, 19)
 
-            val sdf = SimpleDateFormat("HH:mm:ss")
-            val targetDate = sdf.parse(targetTimeString)
-            val currentDateAndTime = sdf.parse(sdf.format(Date()))
-            if (targetDate == currentDateAndTime) {
-                startTaskList.add(tasksList[taskIndex].id)
-                indexInList = taskIndex + 1
-            }
-            if (targetDate < currentDateAndTime) {
-                startTaskList.add(tasksList[taskIndex].id)
-                indexInList = taskIndex + 1
-            }
-            if (targetDate > currentDateAndTime) {
-                val differenceInMillis = targetDate.time - currentDateAndTime.time
-                hours = (differenceInMillis / (1000 * 60 * 60)).toInt()
-                minutes = ((differenceInMillis / (1000 * 60)) % 60).toInt()
-                seconds = ((differenceInMillis / 1000) % 60).toInt()
-                indexInList = taskIndex
-                break;
-            }
 
-        }
-    }
-    LaunchedEffect(tasksList, indexInList)  {
-        while (true) {
-            if (seconds > 0) {
-                delay(1.seconds)
-                seconds--
-            } else if (minutes > 0) {
-                seconds = 59
-                minutes--
-            } else if (hours > 0) {
-                minutes = 59
-                seconds = 59
-                hours--
-            } else {
-                indexInList++
-                if (tasksList.isNotEmpty() && indexInList < tasksList.size && (hours != -1 && minutes != -1 && seconds != -1)) {
-                    val task = tasksList[indexInList]
-                    val targetDateTimeString = task.dateExecutionTask
-                    val targetTimeString = targetDateTimeString.substring(11, 19)
+    @Composable
+    fun TimerStartTask(
+        tasksList: List<Task>,
+        startTaskList: MutableList<Int>
+    ): Triple<Int, Int, Int> {
+        var hours by remember { mutableStateOf(0) }
+        var minutes by remember { mutableStateOf(0) }
+        var seconds by remember { mutableStateOf(0) }
+        var indexInList = 0;
+        if (tasksList.isNotEmpty()) {
+            for (taskIndex in tasksList.indices) {
+                val targetDateTimeStrin = tasksList[taskIndex].dateExecutionTask
+                val targetTimeString = targetDateTimeStrin.substring(11, 19)
 
-                    val sdf = SimpleDateFormat("HH:mm:ss")
-                    val targetDate = sdf.parse(targetTimeString)
-                    val currentDateAndTime = sdf.parse(sdf.format(Date()))
-
+                val sdf = SimpleDateFormat("HH:mm:ss")
+                val targetDate = sdf.parse(targetTimeString)
+                val currentDateAndTime = sdf.parse(sdf.format(Date()))
+                if (targetDate == currentDateAndTime) {
+                    startTaskList.add(tasksList[taskIndex].id)
+                    indexInList = taskIndex + 1
+                }
+                if (targetDate < currentDateAndTime) {
+                    startTaskList.add(tasksList[taskIndex].id)
+                    indexInList = taskIndex + 1
+                }
+                if (targetDate > currentDateAndTime) {
                     val differenceInMillis = targetDate.time - currentDateAndTime.time
-                    hours = (differenceInMillis / (1000 * 60 * 60)).toInt() // Часы
-                    minutes = ((differenceInMillis / (1000 * 60)) % 60).toInt() // Минуты
-                    seconds = ((differenceInMillis / 1000) % 60).toInt() // Секунды
+                    hours = (differenceInMillis / (1000 * 60 * 60)).toInt()
+                    minutes = ((differenceInMillis / (1000 * 60)) % 60).toInt()
+                    seconds = ((differenceInMillis / 1000) % 60).toInt()
+                    indexInList = taskIndex
+                    break;
+                }
+
+            }
+        }
+        LaunchedEffect(tasksList, indexInList) {
+            while (true) {
+                if (seconds > 0) {
+                    delay(1.seconds)
+                    seconds--
+                } else if (minutes > 0) {
+                    seconds = 59
+                    minutes--
+                } else if (hours > 0) {
+                    minutes = 59
+                    seconds = 59
+                    hours--
                 } else {
-                    hours = -1
-                    minutes = -1
-                    seconds = -1
+                    indexInList++
+                    if (tasksList.isNotEmpty() && indexInList < tasksList.size && (hours != -1 && minutes != -1 && seconds != -1)) {
+                        val task = tasksList[indexInList]
+                        val targetDateTimeString = task.dateExecutionTask
+                        val targetTimeString = targetDateTimeString.substring(11, 19)
+
+                        val sdf = SimpleDateFormat("HH:mm:ss")
+                        val targetDate = sdf.parse(targetTimeString)
+                        val currentDateAndTime = sdf.parse(sdf.format(Date()))
+
+                        val differenceInMillis = targetDate.time - currentDateAndTime.time
+                        hours = (differenceInMillis / (1000 * 60 * 60)).toInt() // Часы
+                        minutes = ((differenceInMillis / (1000 * 60)) % 60).toInt() // Минуты
+                        seconds = ((differenceInMillis / 1000) % 60).toInt() // Секунды
+                    } else {
+                        hours = -1
+                        minutes = -1
+                        seconds = -1
+                        break
+                    }
                     break
                 }
-                break
             }
         }
+
+        return Triple(hours, minutes, seconds)
     }
 
-    return Triple(hours, minutes, seconds)
-}
-
-@Composable
-fun TaskItem(taskStartColor: Color, taskDate: Task, navController: NavController, worker: Worker) {
-    Box(
-        modifier = Modifier
-            .padding(bottom = 20.dp)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(WarehouseEmployeeTheme.colors.background_for_light_mode)
-            .border(3.dp, taskStartColor, RoundedCornerShape(20.dp))
+    @Composable
+    fun TaskItem(
+        taskStartColor: Color,
+        taskDate: Task,
+        navController: NavController,
+        worker: Worker,
+        themeMode: ThemeMode
     ) {
-        Row(
+        Box(
             modifier = Modifier
+                .padding(bottom = 20.dp)
                 .fillMaxWidth()
-                .padding(0.dp, 20.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(WarehouseEmployeeTheme.colors.background_for_light_mode)
+                .border(3.dp, taskStartColor, RoundedCornerShape(20.dp))
         ) {
-            Column(
+            Row(
                 modifier = Modifier
-                    .weight(4f)
+                    .fillMaxWidth()
+                    .padding(0.dp, 20.dp)
             ) {
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
+                        .weight(4f)
                 ) {
-                    Text(
-                        text = taskDate.dateExecutionTask.substring(11, 16),
-                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-                            fontSize = 20.sp
-                        ),
-                        color = WarehouseEmployeeTheme.colors.text_color_second_element
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Text(
+                            text = taskDate.dateExecutionTask.substring(11, 16),
+                            style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                fontSize = 20.sp
+                            ),
+                            color = WarehouseEmployeeTheme.colors.text_color_second_element
 
-                    )
-                    Text(
-                        text = taskDate.idCategoryTask.nameCategory,
-                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-                            fontSize = 20.sp
-                        ),
-                        color = WarehouseEmployeeTheme.colors.text_color_second_element
-                    )
+                        )
+                        Text(
+                            text = taskDate.idCategoryTask.nameCategory,
+                            style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                fontSize = 20.sp
+                            ),
+                            color = WarehouseEmployeeTheme.colors.text_color_second_element
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 5.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Text(
+                            text = "${taskDate.idResponsibleWorker.firstName} ${taskDate.idResponsibleWorker.patronymic}",
+                            style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                fontSize = 12.sp
+                            ),
+                            color = WarehouseEmployeeTheme.colors.text_color_second_element
+                        )
+                        Spacer(modifier = Modifier)
+                    }
                 }
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 5.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
+                        .weight(1f)
                 ) {
-                    Text(
-                        text = "${taskDate.idResponsibleWorker.firstName} ${taskDate.idResponsibleWorker.patronymic}",
-                        style = WarehouseEmployeeTheme.typography.secondText.copy(
-                            fontSize = 12.sp
-                        ),
-                        color = WarehouseEmployeeTheme.colors.text_color_second_element
-                    )
-                    Spacer(modifier = Modifier)
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(Color.White)
-                ) {
-                    IconButton(
-                        onClick = {
-                            if (taskDate.idCategoryTask.id == 1) {
-                                navController.navigate("${InfoTaskLoadingDestination.route}/" +
-                                        "${Json.encodeToString(worker)}/" +
-                                        "${Json.encodeToString(taskDate)}")
-
-                            }
-                            else {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color.White)
+                    ) {
+                        IconButton(
+                            onClick = {
                                 if (taskDate.idCategoryTask.id == 1) {
-                                    navController.navigate("${InfoTaskUnloadingDestination.route}/" +
-                                            "${Json.encodeToString(worker)}/" +
-                                            "${Json.encodeToString(taskDate)}")
+                                    navController.navigate(
+                                        "${InfoTaskLoadingDestination.route}/" +
+                                                "${Json.encodeToString(worker)}/" +
+                                                "${Json.encodeToString(taskDate)}/" +
+                                                "${themeMode.title}"
+                                    )
 
+                                } else {
+                                    if (taskDate.idCategoryTask.id == 1) {
+                                        navController.navigate(
+                                            "${InfoTaskUnloadingDestination.route}/" +
+                                                    "${Json.encodeToString(worker)}/" +
+                                                    "${Json.encodeToString(taskDate)}/" +
+                                                    "${themeMode.title}"
+                                        )
+
+                                    }
                                 }
                             }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.arrow_right),
+                                contentDescription = ""
+                            )
                         }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_right),
-                            contentDescription = ""
-                        )
                     }
                 }
             }
         }
     }
-}
+

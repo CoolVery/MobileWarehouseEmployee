@@ -62,7 +62,7 @@ fun VisitingWorkers(
     LaunchedEffect(viewModel.navigateTo) {
         viewModel.navigateTo.collect { destination ->
             destination?.let {
-                navController.navigate("${destination}/${Json.encodeToString(worker)}")
+                navController.navigate("${destination}/${Json.encodeToString(worker)}/null")
             }
         }
     }

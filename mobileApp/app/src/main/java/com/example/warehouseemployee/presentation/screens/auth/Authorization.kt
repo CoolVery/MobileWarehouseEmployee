@@ -42,6 +42,7 @@ import androidx.navigation.NavHostController
 import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.components.textfields.PasswordTextField
 import com.example.warehouseemployee.presentation.components.textfields.PhoneTextField
+import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import kotlinx.coroutines.flow.collect
 import kotlinx.serialization.json.Json
@@ -69,7 +70,13 @@ fun Authorization (
                     viewModel.navigateTo.collect { route ->
                         route?.let {
                             viewModel.worker.collect { user ->
-                                navController.navigate("${route}/${user}")
+                                if (route == TasksWorkerDestination.route) {
+                                    navController.navigate("${route}/${user}/null")
+
+                                }
+                                else {
+                                    navController.navigate("${route}/${user}")
+                                }
                             }
                         }
                     }

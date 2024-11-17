@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,6 +28,7 @@ import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskLoadi
 import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskUnloading
 import com.example.warehouseemployee.presentation.screens.tasks.TasksWorker
 import com.example.warehouseemployee.presentation.screens.visitingworkers.VisitingWorkers
+import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json
@@ -35,6 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
             WarehouseEmployeeTheme {
                 val navController = rememberNavController()
                 val currentBackStack by navController.currentBackStackEntryAsState()
@@ -49,14 +54,34 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(
-                        route = "${TasksWorkerDestination.route}/{${TasksWorkerDestination.worker}}",
+                        route = "${TasksWorkerDestination.route}/{${TasksWorkerDestination.worker}}/{${TasksWorkerDestination.themeUI}}",
                         arguments = TasksWorkerDestination.arguments) { navBackStackEntry ->
                         val worker = navBackStackEntry.arguments!!.getString(TasksWorkerDestination.worker)
+                        val themeUI = navBackStackEntry.arguments!!.getString(TasksWorkerDestination.themeUI)
                         if (worker != null) {
-                            TasksWorker(
-                                worker = Json.decodeFromString<Worker>(worker),
-                                navController = navController
-                            )
+                            if (themeUI == "null") {
+                                TasksWorker(
+                                    worker = Json.decodeFromString<Worker>(worker),
+                                    navController = navController,
+                                    themeModeCurrent = null
+                                )
+                            }
+                            else {
+                                if (themeUI == "Dark") {
+                                    TasksWorker(
+                                        worker = Json.decodeFromString<Worker>(worker),
+                                        navController = navController,
+                                        themeModeCurrent = ThemeMode.Dark
+                                    )
+                                }
+                                else {
+                                    TasksWorker(
+                                        worker = Json.decodeFromString<Worker>(worker),
+                                        navController = navController,
+                                        themeModeCurrent = ThemeMode.Light
+                                    )
+                                }
+                            }
                         }
                     }
                     composable(
@@ -71,18 +96,33 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     composable(
-                        route = "${InfoTaskLoadingDestination.route}/{${InfoTaskLoadingDestination.worker}}/{${InfoTaskLoadingDestination.currentTask}}",
+                        route = "${InfoTaskLoadingDestination.route}/{${InfoTaskLoadingDestination.worker}}/{${InfoTaskLoadingDestination.currentTask}}/{${InfoTaskLoadingDestination.themeUI}}",
                         arguments = InfoTaskLoadingDestination.arguments) { navBackStackEntry ->
+
                         val worker =
                             navBackStackEntry.arguments!!.getString(InfoTaskLoadingDestination.worker)
                         val currentTask =
                             navBackStackEntry.arguments!!.getString(InfoTaskLoadingDestination.currentTask)
+                        val themeUI =
+                            navBackStackEntry.arguments!!.getString(InfoTaskLoadingDestination.themeUI)
                         if (worker != null && currentTask != null) {
-                            InfoTaskLoading(
-                                worker = Json.decodeFromString<Worker>(worker),
-                                currentTask = Json.decodeFromString<Task>(currentTask),
-                                navController = navController
-                            )
+                            if (themeUI == "Dark") {
+
+                                InfoTaskLoading(
+                                    worker = Json.decodeFromString<Worker>(worker),
+                                    currentTask = Json.decodeFromString<Task>(currentTask),
+                                    navController = navController,
+                                    themeUI = ThemeMode.Dark
+                                )
+                            }
+                            else {
+                                InfoTaskLoading(
+                                    worker = Json.decodeFromString<Worker>(worker),
+                                    currentTask = Json.decodeFromString<Task>(currentTask),
+                                    navController = navController,
+                                    themeUI = ThemeMode.Light
+                                )
+                            }
                         }
                     }
                     composable(
@@ -103,4 +143,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
+
 

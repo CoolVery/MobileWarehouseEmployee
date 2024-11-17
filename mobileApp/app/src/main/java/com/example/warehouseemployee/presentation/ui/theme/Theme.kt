@@ -1,9 +1,11 @@
 package com.example.warehouseemployee.ui.theme
 
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.compositionLocalOf
 
 object WarehouseEmployeeTheme {
     val typography: Typography
@@ -16,10 +18,10 @@ object WarehouseEmployeeTheme {
         get() = LocalColor.current
 }
 
-@Composable
 
+@Composable
 fun WarehouseEmployeeTheme(
-    themeMode: ThemeMode = ThemeMode.Dark,
+    themeMode: ThemeMode = ThemeMode.Light,
     typography: Typography = WarehouseEmployeeTheme.typography,
     content: @Composable () -> Unit
 ) {

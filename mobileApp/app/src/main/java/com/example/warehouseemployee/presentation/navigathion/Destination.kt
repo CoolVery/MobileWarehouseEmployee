@@ -18,9 +18,13 @@ object TasksWorkerDestination : Destination {
     override val route = "tasksworker"
     override val title = "Tasksworker"
     const val worker = "worker"
+    const val themeUI = "themeUI"
     val arguments = listOf(navArgument(name = worker) {
         type = NavType.StringType
-    })
+    },
+        navArgument(name = themeUI) {
+            type = NavType.StringType
+        } )
 }
 
 object VisitingWorkersDestination : Destination {
@@ -36,25 +40,33 @@ object InfoTaskLoadingDestination : Destination {
     override val title = "Infotaskloading"
     const val worker = "worker"
     const val currentTask = "currentTask"
+    const val themeUI = "themeUI"
     val arguments = listOf(
         navArgument(name = worker) {
             type = NavType.StringType
         },
         navArgument(name = currentTask) {
+            type = NavType.StringType
+        },
+        navArgument(name = themeUI) {
             type = NavType.StringType
         }
     )
 }
 object InfoTaskUnloadingDestination : Destination {
-    override val route = "infotaskloading"
-    override val title = "Infotaskloading"
+    override val route = "infotaskunloading"
+    override val title = "Infotaskunloading"
     const val worker = "worker"
     const val currentTask = "currentTask"
+    const val themeUI = "themeUI"
     val arguments = listOf(
-        navArgument(name = worker) {
+        navArgument(name = InfoTaskLoadingDestination.worker) {
             type = NavType.StringType
         },
-        navArgument(name = currentTask) {
+        navArgument(name = InfoTaskLoadingDestination.currentTask) {
+            type = NavType.StringType
+        },
+        navArgument(name = themeUI) {
             type = NavType.StringType
         }
     )
