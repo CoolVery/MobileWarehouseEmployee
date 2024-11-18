@@ -10,7 +10,7 @@ data class Cell(
     @SerialName("id_section")
     val idSection: Int,
     @SerialName("id_product")
-    val idProduct: Int,
+    val idProduct: Product,
     @SerialName("name_cell")
     val nameCell: String,
     @SerialName("max_count_product_in_cell")

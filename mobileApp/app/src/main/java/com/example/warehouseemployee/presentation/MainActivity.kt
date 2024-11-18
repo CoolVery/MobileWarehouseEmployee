@@ -16,21 +16,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.warehouseemployee.data.classes.Cell
 import com.example.warehouseemployee.data.classes.Task
 import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.navigathion.AuthorizationDestination
+import com.example.warehouseemployee.presentation.navigathion.InfoCellDestination
 import com.example.warehouseemployee.presentation.navigathion.InfoTaskLoadingDestination
-import com.example.warehouseemployee.presentation.navigathion.InfoTaskUnloadingDestination
 import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
 import com.example.warehouseemployee.presentation.navigathion.VisitingWorkersDestination
 import com.example.warehouseemployee.presentation.screens.auth.Authorization
+import com.example.warehouseemployee.presentation.screens.infocell.InfoCell
 import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskLoading
-import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskUnloading
 import com.example.warehouseemployee.presentation.screens.tasks.TasksWorker
 import com.example.warehouseemployee.presentation.screens.visitingworkers.VisitingWorkers
 import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
@@ -126,18 +129,33 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     composable(
-                        route = "${InfoTaskUnloadingDestination.route}/${InfoTaskUnloadingDestination.worker}/${InfoTaskLoadingDestination.currentTask}",
-                        arguments = InfoTaskUnloadingDestination.arguments) { navBackStackEntry ->
-                        val worker =
-                            navBackStackEntry.arguments!!.getString(InfoTaskUnloadingDestination.worker)
-                        val currentTask =
-                            navBackStackEntry.arguments!!.getString(InfoTaskUnloadingDestination.currentTask)
-                        if (worker != null && currentTask != null) {
-                            InfoTaskUnloading(
+                        route = "${InfoCellDestination.route}/{${InfoCellDestination.themeUI}}/{${InfoCellDestination.cell}}/{${InfoCellDestination.worker}}/{${InfoCellDestination.task}}",
+                        arguments = InfoCellDestination.arguments) { navBackStackEntry ->
+                        val themeUI = navBackStackEntry.arguments!!.getString(InfoCellDestination.themeUI)
+                        val cell = navBackStackEntry.arguments!!.getString(InfoCellDestination.cell)
+                        val worker = navBackStackEntry.arguments!!.getString(InfoCellDestination.worker)
+                        val task = navBackStackEntry.arguments!!.getString(InfoCellDestination.task)
+                        if (themeUI == "Dark") {
+                            InfoCell(
+                                navController = navController,
+                                themeUI = ThemeMode.Dark,
+                                cell = Json.decodeFromString<Cell>(cell!!),
+                                worker = Json.decodeFromString<Worker>(worker!!),
+                                task = Json.decodeFromString<Task>(task!!)
+                            )
+                        }
+                        else {
+                            InfoCell(
+                                navController = navController,
+                                themeUI = ThemeMode.Light,
+                                cell = Json.decodeFromString<Cell>(cell!!),
+                                worker = Json.decodeFromString<Worker>(worker!!),
+                                task = Json.decodeFromString<Task>(task!!)
 
                             )
                         }
                     }
+
                 }
             }
         }

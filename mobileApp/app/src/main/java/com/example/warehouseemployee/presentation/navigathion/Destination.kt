@@ -53,20 +53,25 @@ object InfoTaskLoadingDestination : Destination {
         }
     )
 }
-object InfoTaskUnloadingDestination : Destination {
-    override val route = "infotaskunloading"
-    override val title = "Infotaskunloading"
-    const val worker = "worker"
-    const val currentTask = "currentTask"
+
+object InfoCellDestination : Destination {
+    override val route = "infocell"
+    override val title = "Infocell"
+    const val cell = "cell"
     const val themeUI = "themeUI"
+    const val worker = "worker"
+    const val task = "task"
     val arguments = listOf(
-        navArgument(name = InfoTaskLoadingDestination.worker) {
-            type = NavType.StringType
-        },
-        navArgument(name = InfoTaskLoadingDestination.currentTask) {
+        navArgument(name = cell) {
             type = NavType.StringType
         },
         navArgument(name = themeUI) {
+            type = NavType.StringType
+        },
+        navArgument(name = worker) {
+            type = NavType.StringType
+        },
+        navArgument(name = task) {
             type = NavType.StringType
         }
     )

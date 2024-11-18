@@ -96,7 +96,7 @@ class TaskRepositoryImpl @Inject constructor(
                     Columns.raw("id," +
                             "id_task," +
                             "id_product(id, product_name, article, weight, id_product_category)," +
-                            "id_cell(id, id_section, id_product, name_cell, max_count_product_in_cell, count_product_in_cell, weight_product_in_cell, abbreviated_name)," +
+                            "id_cell(id, id_section, id_product(id, product_name, article, weight, id_product_category), name_cell, max_count_product_in_cell, count_product_in_cell, weight_product_in_cell, abbreviated_name)," +
                             "count_product," +
                             "position_in_optimal_in_path")
                 ) {

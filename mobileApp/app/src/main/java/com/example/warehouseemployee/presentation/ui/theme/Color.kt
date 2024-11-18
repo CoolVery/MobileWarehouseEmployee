@@ -13,6 +13,7 @@ data class ColorPalette(
     val text_color_second_element: Color,
     val background_message: Color,
     val text_color_message: Color,
+    val text_color_in_cell: Color
     )
 
 val darkTheme = ColorPalette (
@@ -25,6 +26,7 @@ val darkTheme = ColorPalette (
     text_color_second_element = Color(0xFFFFFFFF),
     background_message = Color(0xFFD9D9D9),
     text_color_message = Color(0xFF000000),
+    text_color_in_cell = Color(0xFFFFFFFF)
 )
 
 val lightTheme = ColorPalette (
@@ -36,7 +38,9 @@ val lightTheme = ColorPalette (
     background_second_element = Color(0xFF9B9999),
     text_color_second_element = Color(0xFFFFFFFF),
     background_message = Color(0xFFDBDBDB),
-    text_color_message = Color(0xFF000000)
+    text_color_message = Color(0xFF000000),
+    text_color_in_cell = Color(0xFF686666)
+
 )
 
 val LocalColor = staticCompositionLocalOf { darkTheme }

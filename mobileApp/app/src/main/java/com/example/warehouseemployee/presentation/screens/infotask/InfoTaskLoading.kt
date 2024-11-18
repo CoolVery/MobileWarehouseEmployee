@@ -3,6 +3,7 @@ package com.example.warehouseemployee.presentation.screens.infotask
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import androidx.navigation.NavHostController
 import com.example.warehouseemployee.R
 import com.example.warehouseemployee.data.classes.Task
 import com.example.warehouseemployee.data.classes.Worker
+import com.example.warehouseemployee.presentation.navigathion.InfoCellDestination
 import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
 import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
@@ -149,85 +151,184 @@ fun InfoTaskLoading(
                         .padding(0.dp, 10.dp)
 
                 )
-                LazyColumn(
-                    modifier = Modifier
-                ) {
-                    items(
-                        cellAndProductList
-                    ) { itemList ->
+                if (currentTask.idCategoryTask.id == 1) {
+                    LazyColumn(
+                        modifier = Modifier
+                    ) {
+                        items(
+                            cellAndProductList
+                        ) { itemList ->
 
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-
-                                .padding(10.dp, 10.dp)
-
-                        ) {
-                            Column(
-                                verticalArrangement = Arrangement.Center,
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(WarehouseEmployeeTheme.colors.background)
+
                                     .padding(10.dp, 10.dp)
-                                    .weight(1.5f)
-                            ) {
-                                Text(
-                                    text = itemList.idProduct.article,
-                                    style = WarehouseEmployeeTheme.typography.secondText.copy(
-                                        fontSize = 14.sp
-                                    ),
-                                    color = WarehouseEmployeeTheme.colors.text_color_second_element
-                                )
-                                Text(
-                                    text = itemList.idProduct.productName,
-                                    style = WarehouseEmployeeTheme.typography.secondText.copy(
-                                        fontSize = 14.sp
-                                    ),
-                                    color = WarehouseEmployeeTheme.colors.text_color_second_element
-                                )
-                                Text(
-                                    text = "Кол-во: ${itemList.countProduct}",
-                                    style = WarehouseEmployeeTheme.typography.secondText.copy(
-                                        fontSize = 14.sp
-                                    ),
-                                    color = WarehouseEmployeeTheme.colors.text_color_second_element
-                                )
-                                Text(
-                                    text = "Вес: %.2f кг".format(itemList.idProduct.weight * itemList.countProduct),
-                                    style = WarehouseEmployeeTheme.typography.secondText.copy(
-                                        fontSize = 14.sp
-                                    ),
-                                    color = WarehouseEmployeeTheme.colors.text_color_second_element
-                                )
-                            }
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .weight(1f)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.arrow),
-                                    contentDescription = ""
-                                )
-                            }
-                            Column(
 
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(WarehouseEmployeeTheme.colors.background)
-                                    .padding(0.dp, 30.dp)
                             ) {
-
-                                Text(
-                                    text = itemList.idCell.abbreviatedName,
-                                    style = WarehouseEmployeeTheme.typography.secondText,
-                                    color = WarehouseEmployeeTheme.colors.text_color_second_element,
+                                Column(
+                                    verticalArrangement = Arrangement.Center,
                                     modifier = Modifier
-                                )
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(WarehouseEmployeeTheme.colors.background)
+                                        .padding(10.dp, 10.dp)
+                                        .weight(1.5f)
+                                ) {
+                                    Text(
+                                        text = itemList.idProduct.article,
+                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell
+                                    )
+                                    Text(
+                                        text = itemList.idProduct.productName,
+                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell
+                                    )
+                                    Text(
+                                        text = "Кол-во: ${itemList.countProduct}",
+                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell
+                                    )
+                                    Text(
+                                        text = "Вес: %.2f кг".format(itemList.idProduct.weight * itemList.countProduct),
+                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell
+                                    )
+                                }
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.arrow),
+                                        contentDescription = ""
+                                    )
+                                }
+                                Column(
+
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(WarehouseEmployeeTheme.colors.background)
+                                        .padding(0.dp, 30.dp)
+                                        .clickable {
+                                            navController.navigate(
+                                                "${InfoCellDestination.route}/${themeUI.title}/${Json.encodeToString(itemList.idCell)}/${Json.encodeToString(worker)}/${Json.encodeToString(currentTask)}"
+                                            )
+                                        }
+                                ) {
+
+                                    Text(
+                                        text = itemList.idCell.abbreviatedName,
+                                        style = WarehouseEmployeeTheme.typography.secondText,
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell,
+                                        modifier = Modifier
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    LazyColumn(
+                        modifier = Modifier
+                    ) {
+                        items(
+                            cellAndProductList
+                        ) { itemList ->
+
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+
+                                    .padding(10.dp, 10.dp)
+
+                            ) {
+                                Column(
+
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(WarehouseEmployeeTheme.colors.background)
+                                        .padding(0.dp, 30.dp)
+                                        .clickable {
+                                            navController.navigate(
+                                                "${InfoCellDestination.route}/${themeUI.title}/${Json.encodeToString(itemList.idCell)}/${Json.encodeToString(worker)}/${Json.encodeToString(currentTask)}"
+                                            )
+                                        }
+                                ) {
+
+                                    Text(
+                                        text = itemList.idCell.abbreviatedName,
+                                        style = WarehouseEmployeeTheme.typography.secondText,
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell,
+                                        modifier = Modifier
+                                    )
+                                }
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.arrow),
+                                        contentDescription = ""
+                                    )
+                                }
+                                Column(
+                                    verticalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(WarehouseEmployeeTheme.colors.background)
+                                        .padding(10.dp, 10.dp)
+                                        .weight(1.5f)
+                                ) {
+                                    Text(
+                                        text = itemList.idProduct.article,
+                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell
+                                    )
+                                    Text(
+                                        text = itemList.idProduct.productName,
+                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell
+                                    )
+                                    Text(
+                                        text = "Кол-во: ${itemList.countProduct}",
+                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell
+                                    )
+                                    Text(
+                                        text = "Вес: %.2f кг".format(itemList.idProduct.weight * itemList.countProduct),
+                                        style = WarehouseEmployeeTheme.typography.secondText.copy(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = WarehouseEmployeeTheme.colors.text_color_in_cell
+                                    )
+                                }
+
+
                             }
                         }
                     }
@@ -269,7 +370,7 @@ fun InfoTaskLoading(
                             ) {
                                 Text(
                                     text = itemList.idCell.abbreviatedName,
-                                    color = WarehouseEmployeeTheme.colors.text_color_second_element,
+                                    color = WarehouseEmployeeTheme.colors.text_color_in_cell,
                                     style = WarehouseEmployeeTheme.typography.secondText
                                 )
                             }
@@ -282,7 +383,7 @@ fun InfoTaskLoading(
                             ) {
                                 Text(
                                     text = itemList.idCell.abbreviatedName,
-                                    color = WarehouseEmployeeTheme.colors.text_color_second_element,
+                                    color = WarehouseEmployeeTheme.colors.text_color_in_cell,
                                     style = WarehouseEmployeeTheme.typography.secondText
                                 )
                             }
