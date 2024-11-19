@@ -22,11 +22,22 @@ class TasksWorkerViewModel @Inject constructor(
     private val _taskList = MutableStateFlow<List<Task>>(listOf())
     val taskList: Flow<List<Task>> = _taskList
 
+    private var _workerListToMessage = MutableStateFlow<List<Worker>>(listOf())
+    var workerListToMessage: Flow<List<Worker>> = _workerListToMessage
+
     fun getTaskList(worker: Worker) {
         viewModelScope.launch {
-            when (worker.idRole) {
-                1 -> _taskList.value = taskRepository.getTasksWorker(worker)
-                2 -> _taskList.value = taskRepository.getTasksMainWorker(worker)
+            if (worker.idRole == 2) {
+                _taskList.value = taskRepository.getTasksMainWorker(worker)
+                _workerListToMessage.value = taskRepository.getWorkersTask(_taskList.value)
+            }
+            else {
+                val newWorkerList = mutableListOf<Worker>()
+                _taskList.value = taskRepository.getTasksWorker(worker)
+                for (task in _taskList.value) {
+                    newWorkerList.add(task.idResponsibleWorker)
+                }
+                _workerListToMessage.value = newWorkerList
             }
         }
     }

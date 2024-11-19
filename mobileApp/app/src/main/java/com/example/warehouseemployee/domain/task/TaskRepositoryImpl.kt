@@ -1,5 +1,6 @@
 package com.example.warehouseemployee.domain.task
 
+import android.util.Log
 import com.example.warehouseemployee.data.classes.Task
 import com.example.warehouseemployee.data.classes.TaskProduct
 import com.example.warehouseemployee.data.classes.TaskWorker
@@ -26,7 +27,9 @@ class TaskRepositoryImpl @Inject constructor(
                 val startOfDay = currentDateAndTime.substring(0, 10) + " 00:00:00"
                 val endOfDay = currentDateAndTime.substring(0, 10) + " 23:59:59"
 
-                val tempWorkerTasks = postgrest.from("tasks_workers").select {
+                val tempWorkerTasks = postgrest.from("tasks_workers").select (Columns.raw(
+                    "id, id_worker(id, id_worker, id_role, first_name, last_name, patronymic, id_warehouse), id_task, is_worker_completed"
+                )) {
                     filter {
                         eq("id_worker", worker.idWorker)
                     }
@@ -109,6 +112,29 @@ class TaskRepositoryImpl @Inject constructor(
         }
         catch (e: Exception) {
             println(e.message)
+            listOf()
+        }
+    }
+
+    override suspend fun getWorkersTask(listTask: List<Task>): List<Worker> {
+        return try {
+            val listIdTask = listTask.map { it.id }
+            val result = postgrest.from("tasks_workers").select(
+                Columns.raw(
+                    "id, id_worker(id, id_worker, id_role, first_name, last_name, patronymic, id_warehouse), id_task, is_worker_completed"
+                )
+            ){
+                filter {
+                    isIn("id_task", listIdTask)
+                }
+            }.decodeList<TaskWorker>()
+            val resultWorkers = result.map { it.idWorker }
+            resultWorkers
+        }
+        catch (e: Exception) {
+            Log.d("DDD", e.message.toString())
+            Log.d("DDD", e.toString())
+
             listOf()
         }
     }

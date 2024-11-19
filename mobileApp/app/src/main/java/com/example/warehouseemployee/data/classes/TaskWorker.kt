@@ -8,7 +8,7 @@ data class TaskWorker (
     @SerialName("id")
     val id: Int,
     @SerialName("id_worker")
-    val idWorker: String,
+    val idWorker: Worker,
     @SerialName("id_task")
     val idTask: Int,
     @SerialName("is_worker_completed")

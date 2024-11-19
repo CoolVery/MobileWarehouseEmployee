@@ -1,7 +1,16 @@
 package com.example.warehouseemployee.presentation.screens.tasks
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -67,6 +77,8 @@ fun TasksWorker(
     val taskList by viewModel.taskList.collectAsState(initial = emptyList())
     val startTaskList = remember { mutableStateListOf<Int>() }
     var themeMode by remember { mutableStateOf<ThemeMode?>(null) }
+    var visibleChatMessages by remember { mutableStateOf(false) }
+    val workerListToMessage by viewModel.workerListToMessage.collectAsState(initial = emptyList())
 
     viewModel.getTaskList(worker)
     if (themeModeCurrent == null && themeMode != ThemeMode.Dark) {
@@ -91,6 +103,14 @@ fun TasksWorker(
                 .fillMaxSize()
                 .background(WarehouseEmployeeTheme.colors.background)
                 .padding(30.dp, 0.dp)
+                .clickable(
+                    interactionSource = remember {
+                        MutableInteractionSource()
+                    },
+                    indication = null
+                ) {
+                    visibleChatMessages = false
+                }
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -212,7 +232,10 @@ fun TasksWorker(
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .clickable {
+                            visibleChatMessages = true
+                        },
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -225,6 +248,86 @@ fun TasksWorker(
                         painter = painterResource(id = R.drawable.message),
                         contentDescription = ""
                     )
+                }
+            }
+        }
+        AnimatedVisibility(
+            modifier = Modifier
+                .padding(top = 0.dp),
+            visible = visibleChatMessages,
+            enter = slideInVertically(
+                initialOffsetY = { fullHeight -> fullHeight },
+                animationSpec = tween(durationMillis = 500)
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { fullHeight -> fullHeight },
+                animationSpec = tween(durationMillis = 500)
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(top = 200.dp)
+                    .background(WarehouseEmployeeTheme.colors.background)
+
+            ) {
+                Spacer(modifier = Modifier.padding(vertical = 20.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(WarehouseEmployeeTheme.colors.background_important_element)
+                ) {
+                    if (worker.idRole == 1) {
+                        Text(
+                            modifier = Modifier
+                                .padding(vertical = 30.dp),
+                            text = "Главные по смене",
+                            color = WarehouseEmployeeTheme.colors.text_color_important_element,
+                            style = WarehouseEmployeeTheme.typography.primaryTitle
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier
+                                .padding(vertical = 30.dp),
+                            text = "Работники на\nсмене",
+                            color = WarehouseEmployeeTheme.colors.text_color_important_element,
+                            style = WarehouseEmployeeTheme.typography.primaryTitle,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(WarehouseEmployeeTheme.colors.background)
+                ) {
+                    items(
+                        workerListToMessage
+                    ) { workerToMessage ->
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 30.dp, vertical = 20.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(WarehouseEmployeeTheme.colors.background_second_element)
+                        ) {
+                            Text(
+                                workerToMessage.firstName + " " + workerToMessage.lastName + " " + workerToMessage.patronymic,
+                                color = WarehouseEmployeeTheme.colors.text_color_second_element,
+                                style = WarehouseEmployeeTheme.typography.secondText,
+                                modifier = Modifier
+                                    .padding(vertical = 30.dp)
+                            )
+                        }
+
+                    }
                 }
             }
         }
