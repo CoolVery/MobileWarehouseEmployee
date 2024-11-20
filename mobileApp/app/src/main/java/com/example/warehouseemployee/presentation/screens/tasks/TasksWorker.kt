@@ -54,6 +54,7 @@ import com.example.warehouseemployee.R
 import com.example.warehouseemployee.data.classes.Task
 import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.navigathion.InfoTaskLoadingDestination
+import com.example.warehouseemployee.presentation.navigathion.MessagesDestination
 import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskLoading
 import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
@@ -317,6 +318,11 @@ fun TasksWorker(
                                 .padding(horizontal = 30.dp, vertical = 20.dp)
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(WarehouseEmployeeTheme.colors.background_second_element)
+                                .clickable {
+                                    navController.navigate(
+                                        "${MessagesDestination.route}/${Json.encodeToString(worker)}/${Json.encodeToString(workerToMessage)}/null/${themeMode!!.title}"
+                                    )
+                                }
                         ) {
                             Text(
                                 workerToMessage.firstName + " " + workerToMessage.lastName + " " + workerToMessage.patronymic,

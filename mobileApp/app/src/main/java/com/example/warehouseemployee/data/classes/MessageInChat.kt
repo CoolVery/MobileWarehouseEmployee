@@ -10,7 +10,7 @@ data class MessageInChat (
     @SerialName("id_chat")
     val idChat: Int,
     @SerialName("id_worker_sender")
-    val idWorkerSender: Int,
+    val idWorkerSender: String,
     @SerialName("content_message")
     val contentMessage: String
 )

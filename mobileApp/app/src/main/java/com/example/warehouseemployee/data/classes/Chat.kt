@@ -8,7 +8,7 @@ class Chat (
     @SerialName("id")
     val id: Int,
     @SerialName("worker_first")
-    val workerFirst: Int,
+    val workerFirst: String,
     @SerialName("worker_second")
-    val workerSecond: Int
+    val workerSecond: String
 )

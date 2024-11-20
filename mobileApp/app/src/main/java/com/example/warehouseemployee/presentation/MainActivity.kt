@@ -22,11 +22,13 @@ import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.navigathion.AuthorizationDestination
 import com.example.warehouseemployee.presentation.navigathion.InfoCellDestination
 import com.example.warehouseemployee.presentation.navigathion.InfoTaskLoadingDestination
+import com.example.warehouseemployee.presentation.navigathion.MessagesDestination
 import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
 import com.example.warehouseemployee.presentation.navigathion.VisitingWorkersDestination
 import com.example.warehouseemployee.presentation.screens.auth.Authorization
 import com.example.warehouseemployee.presentation.screens.infocell.InfoCell
 import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskLoading
+import com.example.warehouseemployee.presentation.screens.messages.Messages
 import com.example.warehouseemployee.presentation.screens.tasks.TasksWorker
 import com.example.warehouseemployee.presentation.screens.visitingworkers.VisitingWorkers
 import com.example.warehouseemployee.ui.theme.ThemeMode
@@ -153,6 +155,54 @@ class MainActivity : ComponentActivity() {
                                 task = Json.decodeFromString<Task>(task!!)
 
                             )
+                        }
+                    }
+                    composable(
+                        route = "${MessagesDestination.route}/{${MessagesDestination.sendWorker}}/{${MessagesDestination.recipientWorker}}/{${MessagesDestination.task}}/{${MessagesDestination.themeUI}}",
+                        arguments = MessagesDestination.arguments) { navBackStackEntry ->
+                        val sendWorker = navBackStackEntry.arguments!!.getString(MessagesDestination.sendWorker)
+                        val recipientWorker = navBackStackEntry.arguments!!.getString(MessagesDestination.recipientWorker)
+                        val task = navBackStackEntry.arguments!!.getString(MessagesDestination.task)
+                        val themeUI = navBackStackEntry.arguments!!.getString(MessagesDestination.themeUI)
+                        if (themeUI == "Dark") {
+                            if (task == "null") {
+                                Messages(
+                                    navController = navController,
+                                    sendWorker = Json.decodeFromString<Worker>(sendWorker!!),
+                                    recipientWorker = Json.decodeFromString<Worker>(recipientWorker!!),
+                                    themeUI = ThemeMode.Dark,
+                                    task = null
+                                )
+                            }
+                            else {
+                                Messages(
+                                    navController = navController,
+                                    sendWorker = Json.decodeFromString<Worker>(sendWorker!!),
+                                    recipientWorker = Json.decodeFromString<Worker>(recipientWorker!!),
+                                    themeUI = ThemeMode.Dark,
+                                    task = Json.decodeFromString<Task>(task!!)
+                                )
+                            }
+                        }
+                        else {
+                            if (task == "null") {
+                                Messages(
+                                    navController = navController,
+                                    sendWorker = Json.decodeFromString<Worker>(sendWorker!!),
+                                    recipientWorker = Json.decodeFromString<Worker>(recipientWorker!!),
+                                    themeUI = ThemeMode.Light,
+                                    task = null
+                                )
+                            }
+                            else {
+                                Messages(
+                                    navController = navController,
+                                    sendWorker = Json.decodeFromString<Worker>(sendWorker!!),
+                                    recipientWorker = Json.decodeFromString<Worker>(recipientWorker!!),
+                                    themeUI = ThemeMode.Light,
+                                    task = Json.decodeFromString<Task>(task!!)
+                                )
+                            }
                         }
                     }
 

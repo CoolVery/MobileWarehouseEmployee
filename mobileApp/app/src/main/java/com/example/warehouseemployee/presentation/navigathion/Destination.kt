@@ -76,3 +76,27 @@ object InfoCellDestination : Destination {
         }
     )
 }
+
+object MessagesDestination : Destination {
+    override val route = "messages"
+    override val title = "Messages"
+    const val sendWorker = "sendWorker"
+    const val recipientWorker = "recipientWorker"
+    const val themeUI = "themeUI"
+    const val task = "task"
+
+    val arguments = listOf(
+        navArgument(name = sendWorker) {
+            type = NavType.StringType
+        },
+        navArgument(name = recipientWorker) {
+            type = NavType.StringType
+        },
+        navArgument(name = themeUI) {
+            type = NavType.StringType
+        },
+        navArgument(name = task) {
+            type = NavType.StringType
+        },
+    )
+}

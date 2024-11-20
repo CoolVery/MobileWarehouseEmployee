@@ -91,7 +91,7 @@ dependencies {
     implementation(platform(libs.bom))
     implementation(libs.postgrest.kt)
     implementation(libs.storage.kt)
-    implementation(libs.realtime.kt)
+    implementation("io.github.jan-tennert.supabase:realtime-kt:3.0.2")
     implementation(libs.auth.kt)
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.core)
