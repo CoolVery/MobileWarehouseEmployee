@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,9 +32,11 @@ class MessagesViewModel @Inject constructor(
     private var _messageList: MutableStateFlow<MutableList<MessageInChat>> = MutableStateFlow(mutableListOf())
     val messageList: StateFlow<MutableList<MessageInChat>> = _messageList.asStateFlow()
 
+    private var _chatId = 0
+
     fun getMessages(senderWorker: Worker,  recipientWorker: Worker) {
         viewModelScope.launch {
-            val chatId = messagesRepository.getMessagesWorkers(senderWorker, recipientWorker)
+            _chatId = messagesRepository.getMessagesWorkers(senderWorker, recipientWorker)
             withContext(Dispatchers.IO) {
                 @OptIn(SupabaseExperimental::class)
                 val messageFlow: Flow<List<MessageInChat>> = SupabaseContext.provideSupabaseClient().postgrest.from("messages_in_chat")
@@ -42,13 +45,24 @@ class MessagesViewModel @Inject constructor(
                         filter = FilterOperation(
                             "id_chat",
                             FilterOperator.EQ,
-                            chatId
+                            _chatId
                         )
                     )
                 messageFlow.collect {
                     _messageList.value = it.toMutableList()
                 }
             }
+        }
+    }
+    fun sendMessage(contentMessage: String, worker: Worker) {
+        val newMessage = MessageInChat(
+            id = UUID.randomUUID().toString(),
+            idWorkerSender =  worker.idWorker,
+            contentMessage =  contentMessage,
+            idChat = _chatId
+        )
+        viewModelScope.launch {
+            messagesRepository.insertNewMessages(newMessage)
         }
     }
 }

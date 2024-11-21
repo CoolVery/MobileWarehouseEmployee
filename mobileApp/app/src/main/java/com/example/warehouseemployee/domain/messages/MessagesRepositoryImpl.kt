@@ -1,5 +1,6 @@
 package com.example.warehouseemployee.domain.messages
 
+import android.util.Log
 import com.example.warehouseemployee.data.classes.Chat
 import com.example.warehouseemployee.data.classes.MessageInChat
 import com.example.warehouseemployee.data.classes.Worker
@@ -41,6 +42,22 @@ class MessagesRepositoryImpl @Inject constructor(
         }
         catch (e: Exception) {
             -1
+        }
+    }
+
+    override suspend fun insertNewMessages(newMessage: MessageInChat): Boolean {
+        return try {
+        withContext(Dispatchers.IO) {
+            postgrest.from("messages_in_chat").insert(newMessage)
+        true
+        }
+
+        }
+        catch (e: Exception) {
+            Log.d("DDD", e.message.toString())
+            Log.d("DDD", e.toString())
+
+            false
         }
     }
 }

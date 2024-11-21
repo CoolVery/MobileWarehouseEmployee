@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MessageInChat (
     @SerialName("id")
-    val id: Int,
+    val id: String,
     @SerialName("id_chat")
     val idChat: Int,
     @SerialName("id_worker_sender")

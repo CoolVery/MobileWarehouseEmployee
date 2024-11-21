@@ -6,4 +6,5 @@ import com.example.warehouseemployee.data.classes.Worker
 
 interface MessagesRepository {
     suspend fun getMessagesWorkers(sendWorker: Worker, recipientWorker: Worker): Int
+    suspend fun insertNewMessages(newMessage: MessageInChat): Boolean
 }

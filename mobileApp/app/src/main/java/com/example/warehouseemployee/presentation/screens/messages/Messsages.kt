@@ -54,6 +54,7 @@ import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import kotlinx.coroutines.delay
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun Messages(
@@ -69,12 +70,18 @@ fun Messages(
 
     viewModel.getMessages(sendWorker, recipientWorker)
 
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5.seconds)
+            viewModel.getMessages(sendWorker, recipientWorker)
+
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(WarehouseEmployeeTheme.colors.background)
-            .clickable {  }
     ) {
         Spacer(Modifier.padding(vertical = 30.dp))
 
@@ -87,92 +94,124 @@ fun Messages(
 
         ) {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(WarehouseEmployeeTheme.colors.background_important_element)
-            ) {
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 10.dp)
-
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                        .background(WarehouseEmployeeTheme.colors.background_important_element)
                 ) {
-                    Spacer(Modifier.padding(vertical = 15.dp))
 
-                    IconButton(
+                    Column(
+                        verticalArrangement = Arrangement.Center,
 
-                        onClick = {
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 10.dp)
 
-                        }
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_left),
-                            contentDescription = ""
-                        )
+                        Spacer(Modifier.padding(vertical = 15.dp))
+
+                        IconButton(
+
+                            onClick = {
+
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.arrow_left),
+                                contentDescription = ""
+                            )
+                        }
+                        Spacer(Modifier.padding(vertical = 15.dp))
+
                     }
-                    Spacer(Modifier.padding(vertical = 15.dp))
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .weight(4f)
+                            .padding(start = 10.dp)
+                    ) {
+                        Spacer(Modifier.padding(vertical = 15.dp))
 
-                }
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .weight(3f)
-                        .padding(start = 10.dp)
-                ) {
-                    Spacer(Modifier.padding(vertical = 15.dp))
+                        Text(
+                            text = "${recipientWorker.firstName} ${recipientWorker.patronymic}\n${recipientWorker.lastName}",
+                            textAlign = TextAlign.Center,
+                            style = WarehouseEmployeeTheme.typography.primaryTitle.copy(
+                                fontSize = 20.sp
+                            ),
+                            color = WarehouseEmployeeTheme.colors.text_color_important_element
+                        )
 
-                    Text(
-                        text = "${recipientWorker.firstName} ${recipientWorker.lastName}\n${recipientWorker.patronymic}",
-                        textAlign = TextAlign.Center,
-                        style = WarehouseEmployeeTheme.typography.primaryTitle.copy(
-                            fontSize = 20.sp
-                        ),
-                        color = WarehouseEmployeeTheme.colors.text_color_important_element
-                    )
-                    Spacer(Modifier.padding(vertical = 15.dp))
-
-                }
+                    }
             }
             LazyColumn (
                 modifier = Modifier
-                    .padding(top = 30.dp)
                     .fillMaxSize()
             ) {
                 items(
                     messageList
                 ) { message ->
+                    if (message == messageList[0]) {
+                        Spacer(Modifier.padding(vertical = 15.dp))
+                    }
                     if (message.idWorkerSender == sendWorker.idWorker) {
                         Row (
                             horizontalArrangement = Arrangement.End,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = 30.dp)
-                                .background(WarehouseEmployeeTheme.colors.background_message)
                         ) {
-                            Text(
-                                text = message.contentMessage,
-                                textAlign = TextAlign.Center
-                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Box (
+                                contentAlignment = Alignment.Center,
+
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .clip(RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp))
+                                    .background(WarehouseEmployeeTheme.colors.background_message)
+                                    .padding(vertical = 20.dp)
+
+                            ) {
+                                Text(
+                                    text = message.contentMessage,
+                                    style = WarehouseEmployeeTheme.typography.smallText,
+                                    color = WarehouseEmployeeTheme.colors.text_color_message,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+
                         }
+                        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
                     }
                     else {
                         Row (
                             horizontalArrangement = Arrangement.Start,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(end = 30.dp)
-                                .background(WarehouseEmployeeTheme.colors.background_message)
                         ) {
-                            Text(
-                                text = message.contentMessage,
-                                textAlign = TextAlign.Center
-                            )
+                            Box (
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .clip(RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp))
+                                    .background(WarehouseEmployeeTheme.colors.background_message)
+                                    .padding(vertical = 20.dp)
+
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(horizontal = 10.dp),
+                                    text = message.contentMessage,
+                                    style = WarehouseEmployeeTheme.typography.smallText,
+                                    color = WarehouseEmployeeTheme.colors.text_color_message,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+
                         }
+                        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
                     }
 
                 }
@@ -213,7 +252,10 @@ fun Messages(
                 ),
             )
             IconButton(
-                onClick = {},
+                onClick = {
+                    viewModel.sendMessage(textValue, sendWorker)
+                    textValue = ""
+                },
                 enabled = textValue.isNotBlank(),
                 modifier = Modifier
                     .weight(1f)
@@ -232,3 +274,4 @@ fun Messages(
         }
     }
 }
+
