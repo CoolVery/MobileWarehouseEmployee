@@ -1,9 +1,14 @@
 package com.example.warehouseemployee.presentation.screens.infotask
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +37,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.currentCompositionErrors
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +56,7 @@ import com.example.warehouseemployee.R
 import com.example.warehouseemployee.data.classes.Task
 import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.navigathion.InfoCellDestination
+import com.example.warehouseemployee.presentation.navigathion.MessagesDestination
 import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
 import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
@@ -65,7 +74,12 @@ fun InfoTaskLoading(
 ) {
     val cellAndProductList by viewModel.cellAndProductList.collectAsState(listOf())
     val orderInOptimalPath by viewModel.orderInOptimalPath.collectAsState(listOf())
+    val workerListToMessage by viewModel.workerListToMessage.collectAsState(listOf())
+    var visibleChatMessages by remember { mutableStateOf(false) }
+
     viewModel.getTaskProduct(currentTask.id)
+    viewModel.getWorkersToMessage(currentTask.id, worker)
+
     WarehouseEmployeeTheme(themeMode = themeUI) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -73,6 +87,14 @@ fun InfoTaskLoading(
                 .fillMaxSize()
                 .background(WarehouseEmployeeTheme.colors.background)
                 .padding(horizontal = 30.dp)
+                .clickable(
+                    interactionSource = remember {
+                        MutableInteractionSource()
+                    },
+                    indication = null
+                ) {
+                    visibleChatMessages = false
+                }
         ) {
             Column(
                 modifier = Modifier
@@ -440,7 +462,17 @@ fun InfoTaskLoading(
                 }
 
                 IconButton(
-                    onClick = {},
+                    onClick = {
+                        if (worker.idRole == 1) {
+                            navController.navigate(
+                                "${MessagesDestination.route}/${Json.encodeToString(worker)}/${Json.encodeToString(currentTask.idResponsibleWorker)}/${Json.encodeToString(currentTask)}/${themeUI.title}"
+
+                            )
+                        }
+                        else {
+                            visibleChatMessages = true
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
@@ -456,6 +488,91 @@ fun InfoTaskLoading(
 
                 }
 
+            }
+        }
+        AnimatedVisibility(
+            modifier = Modifier
+                .padding(top = 0.dp),
+            visible = visibleChatMessages,
+            enter = slideInVertically(
+                initialOffsetY = { fullHeight -> fullHeight },
+                animationSpec = tween(durationMillis = 500)
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { fullHeight -> fullHeight },
+                animationSpec = tween(durationMillis = 500)
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(top = 200.dp)
+                    .background(WarehouseEmployeeTheme.colors.background)
+
+            ) {
+                Spacer(modifier = Modifier.padding(vertical = 20.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(WarehouseEmployeeTheme.colors.background_important_element)
+                ) {
+                    if (worker.idRole == 1) {
+                        Text(
+                            modifier = Modifier
+                                .padding(vertical = 30.dp),
+                            text = "Главные по смене",
+                            color = WarehouseEmployeeTheme.colors.text_color_important_element,
+                            style = WarehouseEmployeeTheme.typography.primaryTitle
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier
+                                .padding(vertical = 30.dp),
+                            text = "Работники на\nсмене",
+                            color = WarehouseEmployeeTheme.colors.text_color_important_element,
+                            style = WarehouseEmployeeTheme.typography.primaryTitle,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(WarehouseEmployeeTheme.colors.background)
+                ) {
+                    items(
+                        workerListToMessage
+                    ) { workerToMessage ->
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 30.dp, vertical = 20.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(WarehouseEmployeeTheme.colors.background_for_light_mode)
+                                .clickable {
+                                    navController.navigate(
+                                        "${MessagesDestination.route}/${Json.encodeToString(worker)}/${Json.encodeToString(workerToMessage)}/${Json.encodeToString(currentTask)}/${themeUI.title}"
+                                    )
+                                }
+                        ) {
+                            Text(
+                                workerToMessage.firstName + " " + workerToMessage.lastName + " " + workerToMessage.patronymic,
+                                color = WarehouseEmployeeTheme.colors.text_color_second_element,
+                                style = WarehouseEmployeeTheme.typography.secondText,
+                                modifier = Modifier
+                                    .padding(vertical = 30.dp)
+                            )
+                        }
+
+                    }
+                }
             }
         }
     }

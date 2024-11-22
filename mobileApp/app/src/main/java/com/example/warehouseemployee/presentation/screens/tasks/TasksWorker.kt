@@ -317,7 +317,7 @@ fun TasksWorker(
                                 .fillMaxWidth()
                                 .padding(horizontal = 30.dp, vertical = 20.dp)
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(WarehouseEmployeeTheme.colors.background_second_element)
+                                .background(WarehouseEmployeeTheme.colors.background_for_light_mode)
                                 .clickable {
                                     navController.navigate(
                                         "${MessagesDestination.route}/${Json.encodeToString(worker)}/${Json.encodeToString(workerToMessage)}/null/${themeMode!!.title}"

@@ -138,4 +138,25 @@ class TaskRepositoryImpl @Inject constructor(
             listOf()
         }
     }
+
+    override suspend fun getWorkersInOneTask(taskID: Int): List<Worker> {
+        return try {
+            val taskWorkersList = postgrest.from("tasks_workers").select (
+                Columns.raw(
+                    "id, id_worker(id, id_worker, id_role, first_name, last_name, patronymic, id_warehouse), id_task, is_worker_completed"
+                )
+            ) {
+                filter {
+                    eq("id_task", taskID)
+                }
+            }.decodeList<TaskWorker>()
+
+            val result = taskWorkersList.map { it.idWorker }
+            result
+        }
+        catch (e: Exception) {
+            Log.d("DDD", e.message.toString())
+            listOf()
+        }
+    }
 }

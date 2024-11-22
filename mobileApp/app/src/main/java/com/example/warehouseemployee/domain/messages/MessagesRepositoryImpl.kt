@@ -51,12 +51,10 @@ class MessagesRepositoryImpl @Inject constructor(
             postgrest.from("messages_in_chat").insert(newMessage)
         true
         }
-
         }
         catch (e: Exception) {
             Log.d("DDD", e.message.toString())
             Log.d("DDD", e.toString())
-
             false
         }
     }
