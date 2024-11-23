@@ -159,4 +159,26 @@ class TaskRepositoryImpl @Inject constructor(
             listOf()
         }
     }
+
+    override suspend fun getTaskById(taskID: Int): Task? {
+        return try {
+            val result = postgrest.from("tasks").select (
+                Columns.raw("id, " +
+                        "id_category_task(id, name_category), " +
+                        "id_responsible_worker(id_worker, first_name, last_name, patronymic, id, id_role, id_warehouse), " +
+                        "date_create, " +
+                        "img_optimal_path, " +
+                        "date_execution_task, " +
+                        "is_completed")
+            ) {
+                filter {
+                    eq("id", taskID)
+                }
+            }.decodeSingle<Task>()
+            result
+        }
+        catch (e: Exception) {
+            null
+        }
+    }
 }

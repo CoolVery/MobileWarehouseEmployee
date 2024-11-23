@@ -100,3 +100,23 @@ object MessagesDestination : Destination {
         },
     )
 }
+
+object OptimalPlanDestination : Destination {
+    override val route = "optimalplan"
+    override val title = "Otimalplan"
+    const val themeUI = "themeUI"
+    const val worker = "worker"
+    const val task = "task"
+
+    val arguments = listOf(
+        navArgument(name = themeUI) {
+            type = NavType.StringType
+        },
+        navArgument(name = worker) {
+            type = NavType.StringType
+        },
+        navArgument(name = task) {
+            type = NavType.StringType
+        },
+    )
+}

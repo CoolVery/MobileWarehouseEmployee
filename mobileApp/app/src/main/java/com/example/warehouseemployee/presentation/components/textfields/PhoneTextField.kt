@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.substring
 import androidx.compose.ui.unit.dp
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
+import kotlinx.coroutines.delay
 
 /**
  * Текстовые поля для авторизации
@@ -41,7 +42,6 @@ import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
  */
 @Composable
 fun PhoneTextField (value: String, funChange: (String) -> Unit, placeholder: String) {
-    val focusManager = LocalFocusManager.current
     var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
     OutlinedTextField(
         value = textFieldValue,
@@ -62,9 +62,7 @@ fun PhoneTextField (value: String, funChange: (String) -> Unit, placeholder: Str
                 if (newValue.text.length <= 12 && regex.matches(newValue.text)) {
                     textFieldValue = newValue
                     funChange(textFieldValue.text)
-                    if (newValue.text.length == 12) {
-                        focusManager.moveFocus(FocusDirection.Next)
-                    }
+
                 }
             }
         },

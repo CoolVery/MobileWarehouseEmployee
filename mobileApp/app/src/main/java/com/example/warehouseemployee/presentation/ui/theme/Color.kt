@@ -13,7 +13,8 @@ data class ColorPalette(
     val text_color_second_element: Color,
     val background_message: Color,
     val text_color_message: Color,
-    val text_color_in_cell: Color
+    val text_color_in_cell: Color,
+    val color_icon: Color
     )
 
 val darkTheme = ColorPalette (
@@ -26,7 +27,8 @@ val darkTheme = ColorPalette (
     text_color_second_element = Color(0xFFFFFFFF),
     background_message = Color(0xFFD9D9D9),
     text_color_message = Color(0xFF000000),
-    text_color_in_cell = Color(0xFFFFFFFF)
+    text_color_in_cell = Color(0xFFFFFFFF),
+    color_icon = Color(0xFF000000)
 )
 
 val lightTheme = ColorPalette (
@@ -39,7 +41,8 @@ val lightTheme = ColorPalette (
     text_color_second_element = Color(0xFFFFFFFF),
     background_message = Color(0xFFDBDBDB),
     text_color_message = Color(0xFF000000),
-    text_color_in_cell = Color(0xFF686666)
+    text_color_in_cell = Color(0xFF686666),
+    color_icon = Color(0xFFFFFFFF)
 
 )
 

@@ -83,7 +83,9 @@ fun InfoCell(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_left),
-                            contentDescription = ""
+                            contentDescription = "",
+                            tint = WarehouseEmployeeTheme.colors.color_icon
+
                         )
                     }
                     Text(

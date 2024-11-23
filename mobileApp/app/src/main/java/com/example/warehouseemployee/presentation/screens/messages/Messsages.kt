@@ -128,18 +128,15 @@ fun Messages(
                                     )
                                 } else {
                                     navController.navigate(
-                                        "${InfoTaskLoadingDestination.route}/${
-                                            Json.encodeToString(
-                                                sendWorker
-                                            )
-                                        }/${Json.encodeToString(task)}/${themeUI.title}"
+                                        "${InfoTaskLoadingDestination.route}?=${Json.encodeToString(sendWorker)}&=${Json.encodeToString(task)}&=${themeUI.title}"
                                     )
                                 }
                             }
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.arrow_left),
-                                contentDescription = ""
+                                contentDescription = "",
+                                tint = WarehouseEmployeeTheme.colors.color_icon
                             )
                         }
                         Spacer(Modifier.padding(vertical = 15.dp))

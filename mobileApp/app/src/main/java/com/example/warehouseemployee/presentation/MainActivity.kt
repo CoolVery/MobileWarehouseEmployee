@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -23,12 +24,14 @@ import com.example.warehouseemployee.presentation.navigathion.AuthorizationDesti
 import com.example.warehouseemployee.presentation.navigathion.InfoCellDestination
 import com.example.warehouseemployee.presentation.navigathion.InfoTaskLoadingDestination
 import com.example.warehouseemployee.presentation.navigathion.MessagesDestination
+import com.example.warehouseemployee.presentation.navigathion.OptimalPlanDestination
 import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
 import com.example.warehouseemployee.presentation.navigathion.VisitingWorkersDestination
 import com.example.warehouseemployee.presentation.screens.auth.Authorization
 import com.example.warehouseemployee.presentation.screens.infocell.InfoCell
 import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskLoading
 import com.example.warehouseemployee.presentation.screens.messages.Messages
+import com.example.warehouseemployee.presentation.screens.optimalplan.OptimalPlan
 import com.example.warehouseemployee.presentation.screens.tasks.TasksWorker
 import com.example.warehouseemployee.presentation.screens.visitingworkers.VisitingWorkers
 import com.example.warehouseemployee.ui.theme.ThemeMode
@@ -205,7 +208,31 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-
+                    composable(
+                        route = "${OptimalPlanDestination.route}/{${OptimalPlanDestination.worker}}/{${OptimalPlanDestination.task}}/{${OptimalPlanDestination.themeUI}}",
+                        arguments = OptimalPlanDestination.arguments) { navBackStackEntry ->
+                        val worker =
+                            navBackStackEntry.arguments!!.getString(OptimalPlanDestination.worker)
+                        val task =
+                            navBackStackEntry.arguments!!.getString(OptimalPlanDestination.task)
+                        val themeUI =
+                            navBackStackEntry.arguments!!.getString(OptimalPlanDestination.themeUI)
+                        if (themeUI == "Dark") {
+                            OptimalPlan(
+                                navController = navController,
+                                worker = Json.decodeFromString<Worker>(worker!!),
+                                task = Json.decodeFromString<Task>(task!!),
+                                themeUI = ThemeMode.Dark
+                            )
+                        } else {
+                            OptimalPlan(
+                                navController = navController,
+                                worker = Json.decodeFromString<Worker>(worker!!),
+                                task = Json.decodeFromString<Task>(task!!),
+                                themeUI = ThemeMode.Light
+                            )
+                        }
+                    }
                 }
             }
         }

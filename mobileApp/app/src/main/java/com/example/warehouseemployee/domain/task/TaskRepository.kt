@@ -10,4 +10,5 @@ interface TaskRepository {
     suspend fun getTaskProducts(taskId: Int): List<TaskProduct>
     suspend fun getWorkersTask(listTask: List<Task>): List<Worker>
     suspend fun getWorkersInOneTask(taskID: Int): List<Worker>
+    suspend fun getTaskById(taskID: Int): Task?
 }

@@ -62,6 +62,8 @@ import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -178,12 +180,14 @@ fun TasksWorker(
                         if (themeMode == ThemeMode.Light) {
                             Icon(
                                 painter = painterResource(id = R.drawable.dark_mode),
-                                contentDescription = ""
+                                contentDescription = "",
+                                tint = WarehouseEmployeeTheme.colors.color_icon
                             )
                         } else {
                             Icon(
                                 painter = painterResource(id = R.drawable.light_mode),
-                                contentDescription = ""
+                                contentDescription = "",
+                                tint = WarehouseEmployeeTheme.colors.color_icon
                             )
                         }
                     }
@@ -247,7 +251,8 @@ fun TasksWorker(
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.message),
-                        contentDescription = ""
+                        contentDescription = "",
+                        tint = WarehouseEmployeeTheme.colors.color_icon
                     )
                 }
             }
@@ -491,10 +496,12 @@ fun TaskItem(
                 ) {
                     IconButton(
                         onClick = {
+                            var tempDate = taskDate
+                            tempDate.imgOptimalPath = "path"
                             navController.navigate(
                                 "${InfoTaskLoadingDestination.route}/" +
                                         "${Json.encodeToString(worker)}/" +
-                                        "${Json.encodeToString(taskDate)}/" +
+                                        "${Json.encodeToString(tempDate)}/" +
                                         "${themeMode.title}"
                             )
                         }

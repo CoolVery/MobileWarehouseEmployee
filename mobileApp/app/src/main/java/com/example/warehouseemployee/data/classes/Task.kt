@@ -14,7 +14,7 @@ data class Task (
     @SerialName("date_create")
     val dateCreate: String,
     @SerialName("img_optimal_path")
-    val imgOptimalPath: String,
+    var imgOptimalPath: String,
     @SerialName("date_execution_task")
     val dateExecutionTask: String,
     @SerialName("is_completed")

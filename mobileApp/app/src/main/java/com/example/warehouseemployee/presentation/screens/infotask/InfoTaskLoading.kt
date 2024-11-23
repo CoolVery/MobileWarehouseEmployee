@@ -57,6 +57,7 @@ import com.example.warehouseemployee.data.classes.Task
 import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.navigathion.InfoCellDestination
 import com.example.warehouseemployee.presentation.navigathion.MessagesDestination
+import com.example.warehouseemployee.presentation.navigathion.OptimalPlanDestination
 import com.example.warehouseemployee.presentation.navigathion.TasksWorkerDestination
 import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
@@ -125,12 +126,14 @@ fun InfoTaskLoading(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_left),
-                            contentDescription = ""
+                            contentDescription = "",
+                            tint = WarehouseEmployeeTheme.colors.color_icon
                         )
                     }
                     Text(
                         text = currentTask.idCategoryTask.nameCategory,
-                        style = WarehouseEmployeeTheme.typography.primaryTitle
+                        style = WarehouseEmployeeTheme.typography.primaryTitle,
+                        color = WarehouseEmployeeTheme.colors.text_color_important_element
                     )
                 }
                 Row(
@@ -144,14 +147,16 @@ fun InfoTaskLoading(
                         text = "Ответственный\n${currentTask.idResponsibleWorker.firstName} ${currentTask.idResponsibleWorker.patronymic}",
                         style = WarehouseEmployeeTheme.typography.primaryTitle.copy(
                             fontSize = 12.sp
-                        )
+                        ),
+                        color = WarehouseEmployeeTheme.colors.text_color_important_element
 
                     )
                     Text(
                         text = "${currentTask.dateExecutionTask.substring(11, 16)}",
                         style = WarehouseEmployeeTheme.typography.primaryTitle.copy(
                             fontSize = 24.sp
-                        )
+                        ),
+                        color = WarehouseEmployeeTheme.colors.text_color_important_element
 
                     )
                 }
@@ -435,7 +440,9 @@ fun InfoTaskLoading(
             ) {
                 Button(
                     onClick = {
-
+                        navController.navigate(
+                            "${OptimalPlanDestination.route}/${Json.encodeToString(worker)}/${Json.encodeToString(currentTask)}/${themeUI.title}"
+                        )
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = WarehouseEmployeeTheme.colors.background_important_element,
@@ -466,7 +473,6 @@ fun InfoTaskLoading(
                         if (worker.idRole == 1) {
                             navController.navigate(
                                 "${MessagesDestination.route}/${Json.encodeToString(worker)}/${Json.encodeToString(currentTask.idResponsibleWorker)}/${Json.encodeToString(currentTask)}/${themeUI.title}"
-
                             )
                         }
                         else {
@@ -476,14 +482,13 @@ fun InfoTaskLoading(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
-
                         .clip(RoundedCornerShape(20.dp))
                         .background(WarehouseEmployeeTheme.colors.background_important_element)
                 ) {
-
                     Icon(
                         painter = painterResource(id = R.drawable.message),
-                        contentDescription = ""
+                        contentDescription = "",
+                        tint = WarehouseEmployeeTheme.colors.color_icon
                     )
 
                 }
@@ -539,7 +544,6 @@ fun InfoTaskLoading(
                     }
                 }
                 Spacer(modifier = Modifier.padding(vertical = 10.dp))
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
