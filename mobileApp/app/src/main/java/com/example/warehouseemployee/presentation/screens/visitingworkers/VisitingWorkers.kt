@@ -203,7 +203,7 @@ fun VisitingWorkers(
 
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(0.dp, 20.dp),
+                .padding(top = 20.dp, bottom = 50.dp),
             onClick = {
                 showDialog.value = true
             },

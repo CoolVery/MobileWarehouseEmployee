@@ -8,6 +8,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -59,6 +61,7 @@ import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun OptimalPlan(
@@ -72,18 +75,20 @@ fun OptimalPlan(
     val sdfNew = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
     val date = sdf.parse(task.dateExecutionTask)
     val dateTask = sdfNew.format(date)
-    var imageUrl by remember { mutableStateOf<Uri?>(null) }
-    val image by viewModel.imageUrl.collectAsState("")
-    viewModel.getImg(task.id)
-
-    LaunchedEffect(image) {
-        delay(5000)
-        viewModel.imageUrl.collect { newImageUrl ->
-            newImageUrl?.let {
-                imageUrl = Uri.parse(newImageUrl)
-            }
-        }
+    val image by viewModel.imageUrl.collectAsState(null)
+    LaunchedEffect(Unit) {
+        while (true)
+            if (image.isNullOrEmpty()) {
+                delay(5.seconds)
+                viewModel.getImg(task.id)
+            } else break
     }
+//    val imageState = rememberAsyncImagePainter(
+//        model = ImageRequest.Builder(LocalContext.current).data(image).size(Size.ORIGINAL).build()
+//    ).state
+//    LaunchedEffect(image) {
+//
+//    }
     WarehouseEmployeeTheme(themeMode = themeUI) {
         val context = LocalContext.current
         val orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -96,7 +101,6 @@ fun OptimalPlan(
                 activity.requestedOrientation = originalOrientation
             }
         }
-
 
         Column(
             modifier = Modifier
@@ -151,9 +155,7 @@ fun OptimalPlan(
                         color = WarehouseEmployeeTheme.colors.text_color_important_element,
                         textAlign = TextAlign.Center
                     )
-
                 }
-
             }
             Spacer(modifier = Modifier.padding(vertical = 5.dp))
             Column(
@@ -162,23 +164,34 @@ fun OptimalPlan(
                     .padding(bottom = 10.dp)
                     .weight(3f)
             ) {
-                if (imageUrl != null)
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Image(
-                            painter = rememberAsyncImagePainter(imageUrl),
-                            contentDescription = "",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxSize()
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    image?.let { uri ->
+                        val imageState by rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(LocalContext.current).data(uri)
+                                .size(Size.ORIGINAL).build()
+                        ).state.collectAsState()
 
-                        )
+                        if (imageState is AsyncImagePainter.State.Success) {
+                            Image(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                painter = imageState.painter!!,
+                                contentDescription = "",
+                            )
+                        } else {
+                            CircularProgressIndicator()
+                        }
                     }
+
+                }
             }
         }
     }
 }
-
-
-
 
 
 fun Context.findActivity(): Activity? = when (this) {

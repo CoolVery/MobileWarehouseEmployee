@@ -128,7 +128,7 @@ fun Messages(
                                     )
                                 } else {
                                     navController.navigate(
-                                        "${InfoTaskLoadingDestination.route}?=${Json.encodeToString(sendWorker)}&=${Json.encodeToString(task)}&=${themeUI.title}"
+                                        "${InfoTaskLoadingDestination.route}/${Json.encodeToString(sendWorker)}/${Json.encodeToString(task)}/${themeUI.title}"
                                     )
                                 }
                             }
