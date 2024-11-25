@@ -129,12 +129,12 @@ fun Authorization (
             Text(
                 text = "Телефон",
                 style = WarehouseEmployeeTheme.typography.smallText,
-                color = WarehouseEmployeeTheme.colors.text_color_second_element,
+                color = WarehouseEmployeeTheme.colors.color_text_auth,
                 modifier = Modifier
                     .padding(bottom = 10.dp)
             )
             Divider(
-                color = Color.White,
+                color = WarehouseEmployeeTheme.colors.color_text_auth,
                 thickness = 3.dp,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -147,15 +147,15 @@ fun Authorization (
             Text(
                 text = "Пароль",
                 style = WarehouseEmployeeTheme.typography.smallText,
-                color = WarehouseEmployeeTheme.colors.text_color_second_element,
+                color = WarehouseEmployeeTheme.colors.color_text_auth,
                 modifier = Modifier
                     .padding(bottom = 10.dp, top = 30.dp)
             )
             Divider(
-                color = Color.White, // Цвет линии
-                thickness = 3.dp, // Толщина линии
+                color = WarehouseEmployeeTheme.colors.color_text_auth,
+                thickness = 3.dp,
                 modifier = Modifier
-                    .fillMaxWidth() // Занять всю ширину
+                    .fillMaxWidth()
                     .padding(bottom = 30.dp)
             )
             PasswordTextField(

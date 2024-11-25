@@ -39,23 +39,20 @@ class MessagesRepositoryImpl @Inject constructor(
                 }.decodeSingle<Chat>()
                 chat.id
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             -1
         }
     }
 
     override suspend fun insertNewMessages(newMessage: MessageInChat): Boolean {
         return try {
-        withContext(Dispatchers.IO) {
-            postgrest.from("messages_in_chat").insert(newMessage)
-        true
-        }
-        }
-        catch (e: Exception) {
-            Log.d("DDD", e.message.toString())
-            Log.d("DDD", e.toString())
-            false
+            withContext(Dispatchers.IO) {
+                postgrest.from("messages_in_chat").insert(newMessage)
+                false
+            }
+        } catch (e: Exception) {
+
+            true
         }
     }
 }

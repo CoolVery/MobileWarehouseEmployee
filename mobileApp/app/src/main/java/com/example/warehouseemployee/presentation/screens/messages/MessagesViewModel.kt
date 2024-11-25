@@ -27,42 +27,54 @@ import javax.inject.Inject
 @HiltViewModel
 class MessagesViewModel @Inject constructor(
     private val messagesRepository: MessagesRepository
-): ViewModel() {
+) : ViewModel() {
 
-    private var _messageList: MutableStateFlow<MutableList<MessageInChat>> = MutableStateFlow(mutableListOf())
+    private var _isError = MutableStateFlow<Boolean>(false)
+    val isError = _isError.asStateFlow()
+
+    private var _messageList: MutableStateFlow<MutableList<MessageInChat>> =
+        MutableStateFlow(mutableListOf())
     val messageList: StateFlow<MutableList<MessageInChat>> = _messageList.asStateFlow()
 
     private var _chatId = 0
 
-    fun getMessages(senderWorker: Worker,  recipientWorker: Worker) {
+    fun getMessages(senderWorker: Worker, recipientWorker: Worker) {
         viewModelScope.launch {
             _chatId = messagesRepository.getMessagesWorkers(senderWorker, recipientWorker)
-            withContext(Dispatchers.IO) {
-                @OptIn(SupabaseExperimental::class)
-                val messageFlow: Flow<List<MessageInChat>> = SupabaseContext.provideSupabaseClient().postgrest.from("messages_in_chat")
-                    .selectAsFlow(
-                        MessageInChat::id,
-                        filter = FilterOperation(
-                            "id_chat",
-                            FilterOperator.EQ,
-                            _chatId
-                        )
-                    )
-                messageFlow.collect {
-                    _messageList.value = it.toMutableList()
+            try {
+
+
+                withContext(Dispatchers.IO) {
+                    @OptIn(SupabaseExperimental::class)
+                    val messageFlow: Flow<List<MessageInChat>> =
+                        SupabaseContext.provideSupabaseClient().postgrest.from("messages_in_chat")
+                            .selectAsFlow(
+                                MessageInChat::id,
+                                filter = FilterOperation(
+                                    "id_chat",
+                                    FilterOperator.EQ,
+                                    _chatId
+                                )
+                            )
+                    messageFlow.collect {
+                        _messageList.value = it.toMutableList()
+                    }
                 }
+            } catch (e: Exception) {
+
             }
         }
     }
+
     fun sendMessage(contentMessage: String, worker: Worker) {
         val newMessage = MessageInChat(
             id = UUID.randomUUID().toString(),
-            idWorkerSender =  worker.idWorker,
-            contentMessage =  contentMessage,
+            idWorkerSender = worker.idWorker,
+            contentMessage = contentMessage,
             idChat = _chatId
         )
         viewModelScope.launch {
-            messagesRepository.insertNewMessages(newMessage)
+            _isError.value = messagesRepository.insertNewMessages(newMessage)
         }
     }
 }

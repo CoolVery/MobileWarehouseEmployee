@@ -2,10 +2,13 @@ package com.example.warehouseemployee.domain.task
 
 import android.util.Log
 import com.example.warehouseemployee.data.classes.Task
+import com.example.warehouseemployee.data.classes.TaskCategory
 import com.example.warehouseemployee.data.classes.TaskProduct
 import com.example.warehouseemployee.data.classes.TaskWorker
 import com.example.warehouseemployee.data.classes.Worker
 import com.example.warehouseemployee.presentation.screens.tasks.TasksWorker
+import io.github.jan.supabase.auth.exception.AuthRestException
+import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
@@ -19,6 +22,7 @@ import javax.inject.Inject
 class TaskRepositoryImpl @Inject constructor(
     private val postgrest: Postgrest
 ) : TaskRepository {
+
     override suspend fun getTasksWorker(worker: Worker): List<Task> {
         return try {
             withContext(Dispatchers.IO) {
@@ -55,7 +59,10 @@ class TaskRepositoryImpl @Inject constructor(
                 result
             }
         }
-        catch (e: Exception) {
+        catch (e: HttpRequestException) {
+            // Ошибка сети
+            listOf()
+        } catch (e: Exception) {
             listOf()
         }
     }

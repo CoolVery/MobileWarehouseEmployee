@@ -1,5 +1,6 @@
 package com.example.warehouseemployee.presentation.screens.tasks
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -77,11 +79,14 @@ fun TasksWorker(
     viewModel: TasksWorkerViewModel = hiltViewModel()
 ) {
 
+    val context = LocalContext.current
     val taskList by viewModel.taskList.collectAsState(initial = emptyList())
     val startTaskList = remember { mutableStateListOf<Int>() }
     var themeMode by remember { mutableStateOf<ThemeMode?>(null) }
     var visibleChatMessages by remember { mutableStateOf(false) }
     val workerListToMessage by viewModel.workerListToMessage.collectAsState(initial = emptyList())
+
+
 
     viewModel.getTaskList(worker)
     if (themeModeCurrent == null && themeMode != ThemeMode.Dark) {

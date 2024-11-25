@@ -1,6 +1,7 @@
 package com.example.warehouseemployee.presentation.screens.messages
 
 import android.os.IBinder.DeathRecipient
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -54,6 +57,7 @@ import com.example.warehouseemployee.presentation.screens.infotask.InfoTaskLoadi
 import com.example.warehouseemployee.ui.theme.ThemeMode
 import com.example.warehouseemployee.ui.theme.WarehouseEmployeeTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
@@ -69,6 +73,8 @@ fun Messages(
 ) {
     var textValue by remember { mutableStateOf("") }
     val messageList by viewModel.messageList.collectAsState()
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     viewModel.getMessages(sendWorker, recipientWorker)
 
@@ -76,6 +82,21 @@ fun Messages(
         while (true) {
             delay(5.seconds)
             viewModel.getMessages(sendWorker, recipientWorker)
+
+        }
+    }
+
+    LaunchedEffect(viewModel.isError) {
+        viewModel.isError.collect { error ->
+            error?.let {
+                delay(2.seconds)
+                if (error == true) {
+                    Toast.makeText(context, "Проверьте подключение к Интернету", Toast.LENGTH_LONG).show()
+                }
+                else {
+                    textValue = ""
+                }
+            }
 
         }
     }
@@ -148,7 +169,7 @@ fun Messages(
                             .weight(4f)
                             .padding(start = 10.dp)
                     ) {
-                        Spacer(Modifier.padding(vertical = 15.dp))
+                        Spacer(Modifier.padding(vertical = 10.dp))
 
                         Text(
                             text = "${recipientWorker.firstName} ${recipientWorker.patronymic}\n${recipientWorker.lastName}",
@@ -168,6 +189,7 @@ fun Messages(
                     items(
                         messageList
                     ) { message ->
+
                         if (message == messageList[0]) {
                             Spacer(Modifier.padding(vertical = 15.dp))
                         }
@@ -275,7 +297,7 @@ fun Messages(
                 IconButton(
                     onClick = {
                         viewModel.sendMessage(textValue, sendWorker)
-                        textValue = ""
+
                     },
                     enabled = textValue.isNotBlank(),
                     modifier = Modifier
