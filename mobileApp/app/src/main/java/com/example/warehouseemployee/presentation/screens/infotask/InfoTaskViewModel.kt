@@ -15,15 +15,16 @@ import javax.inject.Inject
 class TasksWorkerViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
+    //Хранит все ячейки и продукты в задаче
     private val _cellAndProductList = MutableStateFlow<List<TaskProduct>>(listOf())
     val cellAndProductList: Flow<List<TaskProduct>> = _cellAndProductList
-
+    //Хранит список рабочих для сообщений
     private var _workerListToMessage = MutableStateFlow<List<Worker>>(listOf())
     var workerListToMessage: Flow<List<Worker>> = _workerListToMessage
-
+    //Хранит все ячейки и продукты в задаче, но сортированные
     private val _orderInOptimalPath = MutableStateFlow<List<TaskProduct>>(listOf())
     val orderInOptimalPath: Flow<List<TaskProduct>> = _orderInOptimalPath
-
+    //Получает ячейки и продукты
     fun getTaskProduct(taskId: Int) {
         viewModelScope.launch {
             val result = taskRepository.getTaskProducts(taskId)
@@ -31,6 +32,7 @@ class TasksWorkerViewModel @Inject constructor(
             _orderInOptimalPath.value = result.sortedBy { it.positionInOptimaInPath }
         }
     }
+    //Получаем работников для сообщений
     fun getWorkersToMessage(taskId: Int, worker: Worker) {
         viewModelScope.launch {
             val result = taskRepository.getWorkersInOneTask(taskId)

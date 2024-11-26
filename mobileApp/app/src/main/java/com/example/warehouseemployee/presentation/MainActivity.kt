@@ -61,6 +61,10 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
+                    //Механизм в том, что все муршруты - это route/аргумент1/аргумент2
+                    //Если аргумент - объект, то это Json строка.
+                    //При вызове функции экрана, объект десериализуется в объект
+                    //Также в зависимости от темы передается ее название
                     composable(
                         route = "${TasksWorkerDestination.route}/{${TasksWorkerDestination.worker}}/{${TasksWorkerDestination.themeUI}}",
                         arguments = TasksWorkerDestination.arguments) { navBackStackEntry ->

@@ -18,7 +18,7 @@ import javax.inject.Inject
 class InfoCellViewModel @Inject constructor() : ViewModel() {
     private val _section = MutableStateFlow<Section?>(null)
     val section: Flow<Section?> = _section
-
+    //Получаем секцию по id ячейке
     fun getSection(cell: Cell) {
         viewModelScope.launch {
             val result = SupabaseContext.provideSupabaseClient().postgrest.from("sections").select {

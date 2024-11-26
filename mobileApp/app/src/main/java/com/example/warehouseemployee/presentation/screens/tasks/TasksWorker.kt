@@ -78,17 +78,20 @@ fun TasksWorker(
     themeModeCurrent: ThemeMode?,
     viewModel: TasksWorkerViewModel = hiltViewModel()
 ) {
-
-    val context = LocalContext.current
+    //Хранит лист задач
     val taskList by viewModel.taskList.collectAsState(initial = emptyList())
+    //Хранит лист задач, которые уже выполнены
     val startTaskList = remember { mutableStateListOf<Int>() }
     var themeMode by remember { mutableStateOf<ThemeMode?>(null) }
+    //Флаг для отображения рабочих, которым можно написать
     var visibleChatMessages by remember { mutableStateOf(false) }
+    //Список работников, которым можно написать
     val workerListToMessage by viewModel.workerListToMessage.collectAsState(initial = emptyList())
 
 
 
     viewModel.getTaskList(worker)
+    //Обработка все возможных вариантов передачи themeMode с экрана
     if (themeModeCurrent == null && themeMode != ThemeMode.Dark) {
         themeMode = ThemeMode.Light
     } else if (themeModeCurrent == null && themeMode == ThemeMode.Dark) {
@@ -104,6 +107,7 @@ fun TasksWorker(
     } else {
         themeMode = themeModeCurrent
     }
+    //Часы, минуты, Секунды до следующей выполняемой задачи
     val (hours, minutes, seconds) = TimerStartTask(taskList, startTaskList)
     WarehouseEmployeeTheme(themeMode = themeMode!!) {
         Column(
@@ -147,6 +151,7 @@ fun TasksWorker(
                             color = WarehouseEmployeeTheme.colors.text_color_important_element
 
                         )
+                        //Печатает часы, если все равно -1 - значит все задачи были выполнены
                         if (hours == -1 && minutes == -1 && seconds == -1) {
                             Text(
                                 modifier = Modifier
@@ -206,6 +211,7 @@ fun TasksWorker(
                     taskList,
                     key = { taskList -> taskList.id }
                 ) { taskDate ->
+                    //Если задача есть в списке выполненных, то его рамка зеленая
                     if (startTaskList.contains(taskDate.id)) {
                         TaskItem(
                             taskStartColor = Color.Green,
@@ -262,6 +268,7 @@ fun TasksWorker(
                 }
             }
         }
+        //Мини колонка рабочих, которым можно написать, появляется снизу вверх
         AnimatedVisibility(
             modifier = Modifier
                 .padding(top = 0.dp),
@@ -359,23 +366,29 @@ fun TimerStartTask(
     var hours by remember { mutableStateOf(0) }
     var minutes by remember { mutableStateOf(0) }
     var seconds by remember { mutableStateOf(0) }
-    var indexInList = 0;
+    var indexInList = 0
+    //Если лист не пустой, т.к. поточные данные
     if (tasksList.isNotEmpty()) {
+        //Для каждой задачи из списка, но получаем индексы
         for (taskIndex in tasksList.indices) {
+            //Получаем дату выполнения, а потом именно часть со Временем
             val targetDateTimeStrin = tasksList[taskIndex].dateExecutionTask
             val targetTimeString = targetDateTimeStrin.substring(11, 19)
-
+            //Создаем формат и приводим к ней дату на телефоне
             val sdf = SimpleDateFormat("HH:mm:ss")
             val targetDate = sdf.parse(targetTimeString)
             val currentDateAndTime = sdf.parse(sdf.format(Date()))
+            //Если Времена равны, значит в лист выполненных добавляем айди задачи
             if (targetDate == currentDateAndTime) {
                 startTaskList.add(tasksList[taskIndex].id)
                 indexInList = taskIndex + 1
             }
+            //Если Время в задаче меньше, чем на телефоне, добавляем также в список выполненных
             if (targetDate < currentDateAndTime) {
                 startTaskList.add(tasksList[taskIndex].id)
                 indexInList = taskIndex + 1
             }
+            //Если Время в задаче больше, чем на телефоне, значит рассчитываем разницу, которая будет выводиться на экран
             if (targetDate > currentDateAndTime) {
                 val differenceInMillis = targetDate.time - currentDateAndTime.time
                 hours = (differenceInMillis / (1000 * 60 * 60)).toInt()
@@ -387,8 +400,10 @@ fun TimerStartTask(
 
         }
     }
+    //Сработает тогда, когда меняет индекс листа и сам лист
     LaunchedEffect(tasksList, indexInList) {
         while (true) {
+            //В цикле уменьшаются время по секундам
             if (seconds > 0) {
                 delay(1.seconds)
                 seconds--
@@ -401,11 +416,13 @@ fun TimerStartTask(
                 hours--
             } else {
                 indexInList++
+                //Если лист не пустой, индекс в листе меньше размеру листа и Времена не равны -1 (все выполнены)
                 if (tasksList.isNotEmpty() && indexInList < tasksList.size && (hours != -1 && minutes != -1 && seconds != -1)) {
+                    //Получаем задаче по индексу
                     val task = tasksList[indexInList]
                     val targetDateTimeString = task.dateExecutionTask
                     val targetTimeString = targetDateTimeString.substring(11, 19)
-
+                    //Получаем времена и находим разницу
                     val sdf = SimpleDateFormat("HH:mm:ss")
                     val targetDate = sdf.parse(targetTimeString)
                     val currentDateAndTime = sdf.parse(sdf.format(Date()))
@@ -427,7 +444,7 @@ fun TimerStartTask(
 
     return Triple(hours, minutes, seconds)
 }
-
+//Элемент Задача в списке
 @Composable
 fun TaskItem(
     taskStartColor: Color,

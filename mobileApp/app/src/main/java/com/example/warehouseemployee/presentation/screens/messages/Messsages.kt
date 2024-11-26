@@ -74,10 +74,9 @@ fun Messages(
     var textValue by remember { mutableStateOf("") }
     val messageList by viewModel.messageList.collectAsState()
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
 
     viewModel.getMessages(sendWorker, recipientWorker)
-
+    //Вызываем метод для обновления сообщений
     LaunchedEffect(Unit) {
         while (true) {
             delay(5.seconds)
@@ -85,7 +84,7 @@ fun Messages(
 
         }
     }
-
+    //Сработает и выведет ошибку, если в момент отправки сообщения пропал интернет
     LaunchedEffect(viewModel.isError) {
         viewModel.isError.collect { error ->
             error?.let {
@@ -160,16 +159,17 @@ fun Messages(
                                 tint = WarehouseEmployeeTheme.colors.color_icon
                             )
                         }
-                        Spacer(Modifier.padding(vertical = 15.dp))
+                        Spacer(Modifier.padding(vertical = 20.dp))
 
                     }
                     Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier
                             .weight(4f)
                             .padding(start = 10.dp)
                     ) {
-                        Spacer(Modifier.padding(vertical = 10.dp))
+                        Spacer(Modifier.padding(vertical = 20.dp))
 
                         Text(
                             text = "${recipientWorker.firstName} ${recipientWorker.patronymic}\n${recipientWorker.lastName}",
@@ -297,7 +297,7 @@ fun Messages(
                 IconButton(
                     onClick = {
                         viewModel.sendMessage(textValue, sendWorker)
-
+                        textValue = ""
                     },
                     enabled = textValue.isNotBlank(),
                     modifier = Modifier

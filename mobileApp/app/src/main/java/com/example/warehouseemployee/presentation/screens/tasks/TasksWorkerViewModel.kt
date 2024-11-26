@@ -19,19 +19,22 @@ import javax.inject.Inject
 class TasksWorkerViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
+    //Лист задач
     private val _taskList = MutableStateFlow<List<Task>>(listOf())
     val taskList: Flow<List<Task>> = _taskList
-
+    //Лист рабочих, которым можно написать
     private var _workerListToMessage = MutableStateFlow<List<Worker>>(listOf())
     var workerListToMessage: Flow<List<Worker>> = _workerListToMessage
 
     fun getTaskList(worker: Worker) {
         viewModelScope.launch {
+            //Если роль 2 - получаем задачи для главного по смене и работников по задачам
             if (worker.idRole == 2) {
                 _taskList.value = taskRepository.getTasksMainWorker(worker)
                 _workerListToMessage.value = taskRepository.getWorkersTask(_taskList.value)
             }
             else {
+                //Иначе получаем задачи работника, а в лист работников для сообщениц кладем всех главный работников по задаче
                 val newWorkerList = mutableListOf<Worker>()
                 _taskList.value = taskRepository.getTasksWorker(worker)
                 for (task in _taskList.value) {

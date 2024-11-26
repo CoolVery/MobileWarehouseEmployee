@@ -11,9 +11,9 @@ import io.github.jan.supabase.postgrest.Postgrest
 @Module
 @InstallIn(SingletonComponent::class)
 object MessagesRepositoryModule {
-
+    //Провайдер репозитория авторизации
     @Provides
-    fun provideAuthenticationRepository(postgrest: Postgrest): MessagesRepository {
+    fun provideMessagesRepository(postgrest: Postgrest): MessagesRepository {
         return MessagesRepositoryImpl(postgrest)
     }
 }

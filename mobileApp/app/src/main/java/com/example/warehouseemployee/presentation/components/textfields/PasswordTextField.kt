@@ -48,11 +48,13 @@ fun PasswordTextField (value: String, funChange: (String) -> Unit, placeholder: 
     TextField(
         value = textFieldValue,
         onValueChange = { newValue ->
+            //Проверка, что пароль меньше 6 символов, то он изменяет и вызывает функцию по добавлению символа в строку
             if (newValue.text.length <= 6) {
                 textFieldValue = newValue
                 funChange(textFieldValue.text)
             }
         },
+        //Видимость поля пароля
         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation('*'),
         textStyle = WarehouseEmployeeTheme.typography.textField.copy(
             textDecoration = TextDecoration.None

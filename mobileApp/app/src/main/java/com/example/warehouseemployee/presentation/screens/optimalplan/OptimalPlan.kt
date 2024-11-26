@@ -71,11 +71,13 @@ fun OptimalPlan(
     themeUI: ThemeMode,
     viewModel: OptimalPlanViewModel = hiltViewModel()
 ) {
+    //Создаем формат даты, в котором будем отображать время
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
     val sdfNew = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
     val date = sdf.parse(task.dateExecutionTask)
     val dateTask = sdfNew.format(date)
     val image by viewModel.imageUrl.collectAsState(null)
+    //Будет стараться получить изображение
     LaunchedEffect(Unit) {
         while (true)
             if (image.isNullOrEmpty()) {
@@ -83,13 +85,8 @@ fun OptimalPlan(
                 viewModel.getImg(task.id)
             } else break
     }
-//    val imageState = rememberAsyncImagePainter(
-//        model = ImageRequest.Builder(LocalContext.current).data(image).size(Size.ORIGINAL).build()
-//    ).state
-//    LaunchedEffect(image) {
-//
-//    }
     WarehouseEmployeeTheme(themeMode = themeUI) {
+        //Переворот экрана в горизонтальное положение
         val context = LocalContext.current
         val orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         DisposableEffect(orientation) {
@@ -97,7 +94,6 @@ fun OptimalPlan(
             val originalOrientation = activity.requestedOrientation
             activity.requestedOrientation = orientation
             onDispose {
-                // restore original orientation when view disappears
                 activity.requestedOrientation = originalOrientation
             }
         }

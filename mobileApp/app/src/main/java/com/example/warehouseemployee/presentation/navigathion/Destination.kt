@@ -3,17 +3,32 @@ package com.example.warehouseemployee.presentation.navigathion
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.warehouseemployee.data.classes.Worker
-
+/**
+ * Класс Пути экрана
+ *
+ * @param route пусть к экрану
+ * @param title название экрана
+ *
+ */
 interface Destination {
     val route: String
     val title: String
 }
-
+/**
+ * Путь к экрану Авторизации
+ */
 object AuthorizationDestination : Destination {
     override val route = "authorization"
     override val title = "Authorization"
 }
-
+/**
+ * Путь к экрану Задач
+ *
+ * @param worker рабочий
+ * @param themeUI тема приложения
+ * @param arguments перечисление и определение типов параметров пути
+ *
+ */
 object TasksWorkerDestination : Destination {
     override val route = "tasksworker"
     override val title = "Tasksworker"
@@ -26,7 +41,13 @@ object TasksWorkerDestination : Destination {
             type = NavType.StringType
         } )
 }
-
+/**
+ * Путь к экрану Работники на смене
+ *
+ * @param worker рабочий
+ * @param arguments перечисление и определение типов параметров пути
+ *
+ */
 object VisitingWorkersDestination : Destination {
     override val route = "visitingworkers"
     override val title = "Visitingworkers"
@@ -35,6 +56,15 @@ object VisitingWorkersDestination : Destination {
         type = NavType.StringType
     })
 }
+/**
+ * Путь к экрану Инофрмация задачи
+ *
+ * @param worker рабочий
+ * @param themeUI тема приложения
+ * @param currentTask задача, которую надо посмотреть
+ * @param arguments перечисление и определение типов параметров пути
+ *
+ */
 object InfoTaskLoadingDestination : Destination {
     override val route = "infotaskloading"
     override val title = "Infotaskloading"
@@ -53,7 +83,16 @@ object InfoTaskLoadingDestination : Destination {
         }
     )
 }
-
+/**
+ * Путь к экрану Инофрмация ячейки
+ *
+ * @param worker рабочий
+ * @param themeUI тема приложения
+ * @param task задача, из которой взяата ячейка
+ * @param cell ячейка скалада, которую надо посмотреть
+ * @param arguments перечисление и определение типов параметров пути
+ *
+ */
 object InfoCellDestination : Destination {
     override val route = "infocell"
     override val title = "Infocell"
@@ -76,7 +115,16 @@ object InfoCellDestination : Destination {
         }
     )
 }
-
+/**
+ * Путь к экрану Инофрмация ячейки
+ *
+ * @param sendWorker рабочий, который отправляет сообщения
+ * @param recipientWorker рабочий, который получает сообщения
+ * @param themeUI тема приложения
+ * @param task Если перешли из экрана Информация задачи - Объект задачи, если из экрана Задач - null
+ * @param arguments перечисление и определение типов параметров пути
+ *
+ */
 object MessagesDestination : Destination {
     override val route = "messages"
     override val title = "Messages"
@@ -101,6 +149,15 @@ object MessagesDestination : Destination {
     )
 }
 
+/**
+ * Путь к экрану Инофрмация ячейки
+ *
+ * @param worker рабочий
+ * @param themeUI тема приложения
+ * @param task задача из которой перешли
+ * @param arguments перечисление и определение типов параметров пути
+ *
+ */
 object OptimalPlanDestination : Destination {
     override val route = "optimalplan"
     override val title = "Otimalplan"

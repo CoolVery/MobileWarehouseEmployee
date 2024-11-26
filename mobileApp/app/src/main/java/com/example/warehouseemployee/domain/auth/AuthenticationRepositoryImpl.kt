@@ -25,14 +25,16 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 this.phone = phone
                 this.password = password
             }
+            //Для логики программы в начале UUID ставится S для идентификации НЕ ошибки
             val userId = auth.currentUserOrNull()!!.id
             "S$userId"
+            //Неверная авторизация
         } catch (e: AuthRestException) {
-            // Неверный телефон или пароль
             "Неверный телефон или пароль"
+            //Нет подключения к интернету
         } catch (e: HttpRequestException) {
-            // Ошибка сети
             "Нет соединения с Интернетом\nПроверьте свое подключение"
+            //Неизвестная ошибка
         } catch (e: Exception) {
             "Непредвиденная ошибка"
         }

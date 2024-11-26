@@ -38,20 +38,19 @@ object SupabaseContext {
             install(Realtime)
         }
     }
-
+    //Провайдер постгри
     @Provides
     @Singleton
     fun provideSupabaseDatabase(client: SupabaseClient): Postgrest {
         return client.postgrest
     }
-
+    //Провайдер авторизации
     @Provides
     @Singleton
     fun provideSupabaseAuth(client: SupabaseClient): Auth {
         return client.auth
     }
-
-
+    //Провайдер хранилища
     @Provides
     @Singleton
     fun provideSupabaseStorage(client: SupabaseClient): Storage {

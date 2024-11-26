@@ -58,7 +58,7 @@ fun VisitingWorkers(
     val workersList by viewModel.workerList.collectAsState(initial = emptyList())
 
     viewModel.getWorkersForShift(worker.idWorker)
-
+    //Сработает, когда поменяется навигация
     LaunchedEffect(viewModel.navigateTo) {
         viewModel.navigateTo.collect { destination ->
             destination?.let {
@@ -66,6 +66,7 @@ fun VisitingWorkers(
             }
         }
     }
+    //Окно перед переходом на след экран, спрашивается, что все работники ли пришли
    if (showDialog.value == true) {
        AlertDialog(
            onDismissRequest = { showDialog.value = false },

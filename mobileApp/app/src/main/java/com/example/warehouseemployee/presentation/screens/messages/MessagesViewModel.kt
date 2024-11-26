@@ -38,12 +38,11 @@ class MessagesViewModel @Inject constructor(
 
     private var _chatId = 0
 
+    //Получаем сообщения через realTime
     fun getMessages(senderWorker: Worker, recipientWorker: Worker) {
         viewModelScope.launch {
-            _chatId = messagesRepository.getMessagesWorkers(senderWorker, recipientWorker)
+            _chatId = messagesRepository.getChatIDToWorkers(senderWorker, recipientWorker)
             try {
-
-
                 withContext(Dispatchers.IO) {
                     @OptIn(SupabaseExperimental::class)
                     val messageFlow: Flow<List<MessageInChat>> =
@@ -65,7 +64,7 @@ class MessagesViewModel @Inject constructor(
             }
         }
     }
-
+    //Отправляем сообщение
     fun sendMessage(contentMessage: String, worker: Worker) {
         val newMessage = MessageInChat(
             id = UUID.randomUUID().toString(),

@@ -12,7 +12,7 @@ import io.github.jan.supabase.postgrest.Postgrest
 @Module
 @InstallIn(SingletonComponent::class)
 object WorkerRepositoryModule {
-
+    //Провайдер репозитория работника
     @Provides
     fun provideWorkerRepository(postgrest: Postgrest): WorkerRepository {
         return WorkerRepositoryImpl(postgrest)

@@ -21,25 +21,39 @@ import javax.inject.Inject
 class VisitingWorkersViewModel @Inject constructor(
     private val workerRepository: WorkerRepository
 ) : ViewModel() {
+    //Хранение списка рабочих
     private val _workersList = MutableStateFlow<List<WorkersWorkShift>>(listOf())
     val workerList: Flow<List<WorkersWorkShift>> = _workersList
-
+    //Хранение навигации на след. экран
     private var _navigateTo = MutableStateFlow<String?>(null)
     val navigateTo = _navigateTo.asStateFlow()
-
+    /**
+     * Получить рабочих на смену
+     *
+     * @param workerMainId uuid пользователя
+     *
+     */
     fun getWorkersForShift(workerMainId: String) {
         viewModelScope.launch {
             val listWorkers = workerRepository.getWorkersForShift(workerMainId)
             _workersList.value = listWorkers
         }
     }
+    /**
+     * Обновление посещения рабочего
+     *
+     * @param isCameWorkersList список рабочих, которые пришли
+     *
+     */
     fun updateIsCameWorkers(isCameWorkersList: List<Worker>) {
        viewModelScope.launch {
+           //Если рабочий пришел на смену, то ему ставиться true
            for (worker in _workersList.value) {
                if (isCameWorkersList.contains(worker.idWorker)) {
                    worker.isCame = true
                }
            }
+           //Если все успешно, то переход на след экран
            if(workerRepository.updateIsCameShiftWorker(_workersList.value)) {
                _navigateTo.value = TasksWorkerDestination.route
            }

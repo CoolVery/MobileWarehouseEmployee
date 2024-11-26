@@ -16,7 +16,7 @@ import javax.inject.Inject
 class MessagesRepositoryImpl @Inject constructor(
     private val postgrest: Postgrest
 ) : MessagesRepository {
-    override suspend fun getMessagesWorkers(
+    override suspend fun getChatIDToWorkers(
         sendWorker: Worker,
         recipientWorker: Worker
     ): Int {
@@ -24,7 +24,9 @@ class MessagesRepositoryImpl @Inject constructor(
             withContext(Dispatchers.IO) {
                 val chat = postgrest.from("chats").select {
                     filter {
-
+                        //Так как чаты в БД сделаны по принципу (Главный по смене - Рабочий) и  (Рабочий - Главный по смене)
+                        //То запрос проверяет, что Или отправитель является первым рабочем, а получатель вторым, Или
+                        //отправитель является вторым, а получатель первым
                         or {
                             and {
                                 eq("worker_first", sendWorker.idWorker)
@@ -39,6 +41,7 @@ class MessagesRepositoryImpl @Inject constructor(
                 }.decodeSingle<Chat>()
                 chat.id
             }
+            //Если произошла ошибка, то вернется -1
         } catch (e: Exception) {
             -1
         }
@@ -47,11 +50,11 @@ class MessagesRepositoryImpl @Inject constructor(
     override suspend fun insertNewMessages(newMessage: MessageInChat): Boolean {
         return try {
             withContext(Dispatchers.IO) {
+                //insert в таблицу нового сообщения
                 postgrest.from("messages_in_chat").insert(newMessage)
                 false
             }
         } catch (e: Exception) {
-
             true
         }
     }

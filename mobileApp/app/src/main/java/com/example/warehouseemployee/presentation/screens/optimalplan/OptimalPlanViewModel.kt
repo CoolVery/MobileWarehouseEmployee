@@ -19,7 +19,7 @@ class OptimalPlanViewModel @Inject constructor(
 ): ViewModel() {
     private val _imageUrl: MutableStateFlow<String?> = MutableStateFlow<String?>(null)
     val imageUrl: StateFlow<String?> = _imageUrl.asStateFlow()
-
+    //Получаем изображение из задачи
     fun getImg(taskId: Int) {
         viewModelScope.launch {
             val taskFull = taskRepository.getTaskById(taskId)

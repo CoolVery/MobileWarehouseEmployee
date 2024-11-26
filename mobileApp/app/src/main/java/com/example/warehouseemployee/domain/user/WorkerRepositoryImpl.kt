@@ -24,6 +24,7 @@ class WorkerRepositoryImpl @Inject constructor(
 ) : WorkerRepository {
     override suspend fun getWorker(workerId: String): Worker? {
         return try {
+            //Получаем рабочего по его uuid
             withContext(Dispatchers.IO) {
                 val result = postgrest.from("workers")
                     .select() {
@@ -33,6 +34,7 @@ class WorkerRepositoryImpl @Inject constructor(
                     }.decodeSingle<Worker>()
                 result
             }
+        //Если ошибка, то вернет null
         } catch (e: Exception) {
             null
         }
@@ -41,9 +43,10 @@ class WorkerRepositoryImpl @Inject constructor(
     override suspend fun getWorkersForShift(mainWorkerId: String): List<WorkersWorkShift> {
         return try {
             withContext(Dispatchers.IO) {
+                //Создаем формат даты и в ней получаем дату с телефона
                 val sdf = SimpleDateFormat("yyyy-MM-dd")
                 val currentDateAndTime = sdf.format(Date())
-
+                //Получаем смену, где главный по смене - наш рабочий, а дата смены совпадает с сегодняшней датой
                 val main_user_on_shift = postgrest.from("work_shifts")
                     .select {
                         filter {
@@ -51,6 +54,7 @@ class WorkerRepositoryImpl @Inject constructor(
                             eq("date_shift", currentDateAndTime)
                         }
                     }.decodeSingle<WorkShift>()
+                //Получаем рабочих из таблицы Много ко Многим, где id смены - id сегодняшняя смена
                 val result = postgrest.from("workers_work_shifts")
                     .select (
                         Columns.raw("id, id_work_shift, id_worker(id_worker, first_name, last_name, patronymic, id, id_role, id_warehouse), is_came")
@@ -61,6 +65,7 @@ class WorkerRepositoryImpl @Inject constructor(
                     }.decodeList<WorkersWorkShift>()
                 result
             }
+        //Если ошибка, то вернет пустой лист
         } catch (e: Exception) {
             listOf()
         }
@@ -71,6 +76,7 @@ class WorkerRepositoryImpl @Inject constructor(
     ): Boolean {
         return try {
             withContext(Dispatchers.IO) {
+                //Для каждого рабочего из списка обновляем поле (он пришел) на true
                 for (worker in workersWorkShiftList) {
                     if (worker.isCame) {
                         postgrest.from("workers_work_shifts").update(
