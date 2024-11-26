@@ -7,7 +7,7 @@ git clone http://gogs.ngknn.ru:3000/CoolVeryVery/MobileSoftwareWarehouseEmployee
 ```  
 2. Открыть Android Studio <br /> <br />
 3. Файлы - Новый - Открыть - находим и открываем папку mobileAPP <br /> <br />
-4. После того, как приложения соберется, в Gradle Scripts в файл local.properties нужно вставить две строки из файла date_for_signIn_and_work_mobileApp -> supabase_key/.txt <br /> <br />
+4. После того, как приложения соберется, в Gradle Scripts в файл local.properties нужно вставить две строки из файла date_for_signIn_and_work_mobileApp -> supabase_key.txt <br /> <br />
 НИЧЕГО ИЗ ФАЙЛА НЕ УДАЛЯТЬ, ИЗ ФАЙЛА СКОПИРОВАТЬ ДВЕ СТРОЧКИ И ВСТАВИТЬ В ФАЙЛ ПОСЛЕ sdk.dir=<br /> <br />
 5. Структура данных Очень зависит от Даты, поэтому в файле date_for_signIn_and_work_mobileApp -> Work_Shift_SignIn.xlsx находим сегодшняшнюю дату и запоминаем id <br /> <br />
 6. date_for_signIn_and_work_mobileApp -> Workers_Work_shift.xlsx хранит Рабочих, которые должны прийти на смену, по id_work_shift находим uuid работников, под которым хотим войти <br /> <br />
