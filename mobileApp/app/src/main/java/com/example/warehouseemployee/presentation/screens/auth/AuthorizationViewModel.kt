@@ -38,6 +38,17 @@ class AuthorizationViewModel @Inject constructor(
     //Хранение телефона
     private val _phone = MutableStateFlow("")
     val phone: Flow<String> = _phone
+
+    var phoneValue: String
+        get() = _phone.value
+        set(value) {
+            _phone.value = value
+        }
+    var passwordValue: String
+        get() = _password.value
+        set(value) {
+            _phone.value = value
+        }
     //Хранение пароля
     private val _password = MutableStateFlow("")
     val password = _password
