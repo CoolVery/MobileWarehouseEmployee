@@ -31,10 +31,18 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -42,7 +50,7 @@ import org.junit.runner.RunWith
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class UiTest {
 
     @get:Rule
     val composeTestRule =
@@ -168,9 +176,9 @@ class ExampleInstrumentedTest {
                 Authorization(controller, authVM)
             }
 
-            composable(TasksWorkerDestination.route) {
-                TasksWorker(work, controller, ThemeMode.Dark)
-            }
+//            composable(TasksWorkerDestination.route) {
+//                TasksWorker(work, controller, ThemeMode.Dark)
+//            }
 
 //            composable(NavigationRoutes.REGIST) {
 //                Register(controller, registViewModel)
@@ -184,3 +192,43 @@ class ExampleInstrumentedTest {
         }
     }
 }
+
+//@RunWith(AndroidJUnit4::class)
+//class UnitSupabaseTest {
+//    @get:Rule
+//    val composeTestRule =
+//        createComposeRule()
+//
+//    lateinit var authVM: AuthorizationViewModel
+//
+//    val client = createSupabaseClient(
+//        supabaseUrl = BuildConfig.SUPABASE_URL,
+//        supabaseKey = BuildConfig.SUPABASE_ANON_KEY
+//    ) {
+//        install(Postgrest)
+//        install(Auth) {
+//            flowType = FlowType.PKCE
+//            scheme = "app"
+//            host = "supabase.com"
+//        }
+//        install(Storage)
+//        install(Realtime)
+//    }
+//    @Test
+//    fun test() = runBlocking {
+//
+//        val auth: Auth = client.auth
+//        val postgrest: Postgrest = client.postgrest
+//        val workerRep: WorkerRepository = WorkerRepositoryImpl(postgrest)
+//        val authRep: AuthenticationRepository = AuthenticationRepositoryImpl(auth)
+//        authVM = AuthorizationViewModel(authRep, workerRep)
+//        authVM.phoneValue = "+79290509319"
+//        authVM.passwordValue = "123460"
+//
+//            authVM.onSignIn()
+//            delay(10.seconds)
+//            assertEquals("S62bfff1c-5b34-4b5d-9847-9e85a49f1e05", authVM.isErrorValue)
+//
+//
+//    }
+//}

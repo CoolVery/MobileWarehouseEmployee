@@ -49,6 +49,10 @@ class AuthorizationViewModel @Inject constructor(
         set(value) {
             _phone.value = value
         }
+    val isErrorValue: String
+        get() = _isError.value!!
+    val navigateToValue: String?
+        get() = _navigateTo.value
     //Хранение пароля
     private val _password = MutableStateFlow("")
     val password = _password

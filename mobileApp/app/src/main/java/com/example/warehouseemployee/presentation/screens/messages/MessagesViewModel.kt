@@ -32,6 +32,8 @@ class MessagesViewModel @Inject constructor(
     private var _isError = MutableStateFlow<Boolean>(false)
     val isError = _isError.asStateFlow()
 
+    val isErrorValue: Boolean
+        get() = _isError.value
     private var _messageList: MutableStateFlow<MutableList<MessageInChat>> =
         MutableStateFlow(mutableListOf())
     val messageList: StateFlow<MutableList<MessageInChat>> = _messageList.asStateFlow()

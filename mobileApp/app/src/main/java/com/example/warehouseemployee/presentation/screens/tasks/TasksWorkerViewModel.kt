@@ -26,6 +26,8 @@ class TasksWorkerViewModel @Inject constructor(
     private var _workerListToMessage = MutableStateFlow<List<Worker>>(listOf())
     var workerListToMessage: Flow<List<Worker>> = _workerListToMessage
 
+    val taskListValue: List<Task>
+        get() = _taskList.value
     fun getTaskList(worker: Worker) {
         viewModelScope.launch {
             //Если роль 2 - получаем задачи для главного по смене и работников по задачам

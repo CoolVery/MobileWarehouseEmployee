@@ -107,4 +107,6 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.3")
 
     testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("io.mockk:mockk:1.13.5") // Или последняя версия
+
 }
