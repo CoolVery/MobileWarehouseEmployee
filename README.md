@@ -57,3 +57,9 @@ git clone http://gogs.ngknn.ru:3000/CoolVeryVery/MobileSoftwareWarehouseEmployee
 3.2 **supabase_key.txt** - хранит ключи для подключения к supabase <br /> <br />
 3.3 **Work_Shift_SignIn.xlsx** - хранит записи из БД о рабочих сменах <br /> <br />
 3.4 **Workers_Work_shift.xlsx** - хранит записи из БД о работниках, которые должны прийти на смену <br /> <br />
+
+
+-----
+
+
+4. **final_defense** = хранит итоговый отчет и итоговую презентацию
