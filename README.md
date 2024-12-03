@@ -62,4 +62,4 @@ git clone http://gogs.ngknn.ru:3000/CoolVeryVery/MobileSoftwareWarehouseEmployee
 -----
 
 
-4. **final_defense** = хранит итоговый отчет и итоговую презентацию
+4. **final_defense** - хранит итоговый отчет и итоговую презентацию
